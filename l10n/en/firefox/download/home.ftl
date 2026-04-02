@@ -61,7 +61,7 @@ firefox-home-app-store = { -brand-name-app-store }
 
 ## Make Firefox your own section
 
-firefox-home-make-firefox-your = make { -brand-name-firefox } your own
+firefox-home-make-firefox-your = Make { -brand-name-firefox } your own
 firefox-home-backed-by-the = Backed by the non-profit that puts people first
 
 firefox-home-questions = Questions?

@@ -322,8 +322,39 @@
       <section class="fl-section">
         <div class="fl-section-container">
 
-         Make Firefox your own
+          <include:heading
+            level="h2"
+            heading_text="{{ ftl('firefox-home-make-firefox-your') }}"
+          />
 
+          <ul class="icon-text-list">
+              <li>
+                <span class="fl-icon-wrap">
+                  <include:icon icon_name="extension-fill" aria-hidden="true" />
+                </span>
+                <h3>{{ ftl('firefox-desktop-download-extensions-for-every')}}</h3>
+                {% set extensions_attrs = 'href="https://addons.mozilla.org/firefox/extensions/%s" rel="external noopener" data-cta-text="extension for everyone"'|safe|format(params) %}
+                <p>{{ ftl('firefox-desktop-download-from-security-to', attrs=extensions_attrs) }}</p>
+              </li>
+
+              <li>
+                <span class="fl-icon-wrap">
+                  <include:icon icon_name="icon-palette" aria-hidden="true" />
+                </span>
+                <h3>{{ ftl('firefox-desktop-download-change-up-your')}}</h3>
+                <p>{{ ftl('firefox-desktop-download-go-from-light')}}</p>
+              </li>
+
+              <li>
+                <span class="fl-icon-wrap">
+                  <include:icon icon_name="settings" aria-hidden="true" />
+                </span>
+                <h3>{{ ftl('firefox-desktop-download-tweak-your-settings')}}</h3>
+                <p>{{ ftl('firefox-desktop-download-theres-no-need')}}</p>
+              </li>
+            </ul>
+
+            <img src="/media/img/firefox/landing/get/browser-dark.jpg" srcset="/media/img/firefox/landing/get/browser-dark-high-res.jpg" alt="firefox.com" />
         </div>
        </section>
     </div>
