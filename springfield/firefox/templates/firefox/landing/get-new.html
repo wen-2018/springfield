@@ -6,6 +6,8 @@
 
 {% extends "cms/base-flare26.html" %}
 
+{% set params = '?utm_source=www.firefox.com&utm_medium=referral&utm_campaign=firefox-landing-get' %}
+
 {% macro marketing_opt_out_checkbox(id='marketing-opt-out') -%}
   <label for="{{ id }}" class="marketing-opt-out-checkbox-label hidden">
     <input type="checkbox" id="{{ id }}" class="marketing-opt-out-checkbox-input">
@@ -64,6 +66,7 @@
         <div class="fl-section-container">
           <include:heading
             level="h2"
+            alignment_class="text-center"
             heading_text="{{ ftl('firefox-home-latest-features') }}"
           />
 
@@ -146,6 +149,7 @@
         <div class="fl-section-container">
           <include:heading
             level="h2"
+            alignment_class="text-center"
             heading_text="{{ ftl('firefox-home-do-what-you-do') }}"
           />
 
@@ -216,6 +220,7 @@
         <div class="fl-section-container">
           <include:heading
             level="h2"
+            alignment_class="text-center"
             heading_text="{{ ftl('firefox-home-do-it-all') }}"
           />
 
@@ -324,6 +329,7 @@
 
           <include:heading
             level="h2"
+            alignment_class="text-center"
             heading_text="{{ ftl('firefox-home-make-firefox-your') }}"
           />
 
@@ -362,8 +368,47 @@
     <div class="fl-split-page-lower">
       <section class="fl-section">
         <div class="fl-section-container">
+          {% set mozorg_about_href = 'https://www.mozilla.org/' + LANG + '/about/' + params %}
+          {% set created_attrs = 'href="%s" data-cta-text="created by Mozilla"'|safe|format(mozorg_about_href) %}
+          <include:card-gallery>
+            <content:heading>
+              <include:heading
+                level="h2"
+                alignment_class="text-center"
+                heading_text="{{ ftl('firefox-home-backed-by-the') }}"
+              />
+            </content:heading>
 
-        Everything below the purple goes here.
+            <content:main_card>
+              <h3 class="fl-heading">
+                {{ ftl('firefox-desktop-download-challenging-the-status') }}
+              </h3>
+              <div class="fl-body">
+                {{ ftl('firefox-desktop-download-firefox-was-created') }}
+              </div>
+            </content:main_card>
+
+            <content:main_card_image>
+              <img src="/media/img/firefox/landing/get/browser-dark.jpg" srcset="/media/img/firefox/landing/get/browser-dark-high-res.jpg" alt="" loading="lazy" />
+            </content:main_card_image>
+
+            <content:secondary_card>
+              <h3 class="fl-heading">
+                {{ ftl('firefox-desktop-download-your-privacy-comes') }}
+              </h3>
+              <div class="fl-body">
+                {% set privacy_href = 'https://www.mozilla.org/' + LANG + '/privacy/' + params %}
+                {% set internet_attrs = 'href="%s" data-cta-text="Personal Data Promise"'|safe|format(privacy_href) %}
+                {{ ftl('firefox-desktop-download-as-the-internet-v2') }}
+              </div>
+            </content:secondary_card>
+
+            <content:secondary_card_image>
+              <img src="/media/img/firefox/landing/get/browser-dark.jpg"
+                  alt=""
+                  loading="lazy" />
+            </content:secondary_card_image>
+          </include:card-gallery>
 
         </div>
      </section>
