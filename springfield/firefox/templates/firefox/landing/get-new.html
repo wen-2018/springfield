@@ -312,7 +312,7 @@
             </ul>
 
 
-            {{ marketing_opt_out_checkbox(id='marketing-opt-out-primary') }}
+            {{ marketing_opt_out_checkbox(id='marketing-opt-out-features') }}
             <include:download-firefox-button
               analytics_id="set-default-download-firefox"
               label="{{ ftl('download-button-download-firefox') }}"
@@ -411,11 +411,137 @@
           </include:card-gallery>
 
         </div>
+
+        <div class="fl-section-container">
+          <include:heading
+            level="h2"
+            alignment_class="text-center"
+            heading_text="{{ ftl('firefox-desktop-download-keep-all-your') }}"
+          />
+
+
+          <include:cards-list>
+
+            <include:illustration-card-2026>
+              <content:media>
+                  <img src="/media/img/firefox/landing/get/card-kit-in-box.jpg" width="340" height="400" alt="" aria-hidden />
+              </content:media>
+              <content:heading>
+                <include:heading
+                  level="h3"
+                  heading_text="{{ ftl('firefox-home-pick-up-where') }}"
+                  superheading_text="{{ ftl('firefox-home-focus') }}"
+                />
+              </content:heading>
+              <content:body>
+                <p>{{ ftl('firefox-home-firefox-view-lets') }}</p>
+              </content:body>
+            </include:illustration-card-2026>
+
+            <include:illustration-card-2026>
+              <content:media>
+                  <img src="/media/img/firefox/landing/get/card-report.jpg" width="340" height="400" alt="" aria-hidden />
+              </content:media>
+              <content:heading>
+                <include:heading
+                  level="h3"
+                  heading_text="{{ ftl('firefox-home-browse-knowing') }}"
+                  superheading_text="{{ ftl('firefox-home-protection') }}"
+                />
+              </content:heading>
+              <content:body>
+                <p>{{ ftl('firefox-home-firefox-total-cookie') }}</p>
+              </content:body>
+            </include:illustration-card-2026>
+
+            <include:illustration-card-2026>
+              <content:media>
+                  <img src="/media/img/firefox/landing/get/card-kit-paper.jpg" width="340" height="400" alt="" aria-hidden />
+              </content:media>
+              <content:heading>
+                <include:heading
+                  level="h3"
+                  heading_text="{{ ftl('firefox-home-pick-up-where') }}"
+                  superheading_text="{{ ftl('firefox-home-control') }}"
+                />
+              </content:heading>
+              <content:body>
+                <p>{{ ftl('firefox-home-forget-printing') }}</p>
+              </content:body>
+            </include:illustration-card-2026>
+
+            <include:illustration-card-2026>
+              <content:media>
+                  <img src="/media/img/firefox/landing/get/card-kit-in-box.jpg" width="340" height="400" alt="" aria-hidden />
+              </content:media>
+              <content:heading>
+                <include:heading
+                  level="h3"
+                  heading_text="{{ ftl('firefox-home-pick-up-where') }}"
+                  superheading_text="{{ ftl('firefox-home-focus') }}"
+                />
+              </content:heading>
+              <content:body>
+                <p>{{ ftl('firefox-home-firefox-view-lets') }}</p>
+              </content:body>
+            </include:illustration-card-2026>
+
+            <include:illustration-card-2026>
+              <content:media>
+                  <img src="/media/img/firefox/landing/get/card-report.jpg" width="340" height="400" alt="" aria-hidden />
+              </content:media>
+              <content:heading>
+                <include:heading
+                  level="h3"
+                  heading_text="{{ ftl('firefox-home-browse-knowing') }}"
+                  superheading_text="{{ ftl('firefox-home-protection') }}"
+                />
+              </content:heading>
+              <content:body>
+                <p>{{ ftl('firefox-home-firefox-total-cookie') }}</p>
+              </content:body>
+            </include:illustration-card-2026>
+
+            <include:illustration-card-2026>
+              <content:media>
+                  <img src="/media/img/firefox/landing/get/card-kit-paper.jpg" width="340" height="400" alt="" aria-hidden />
+              </content:media>
+              <content:heading>
+                <include:heading
+                  level="h3"
+                  heading_text="{{ ftl('firefox-home-pick-up-where') }}"
+                  superheading_text="{{ ftl('firefox-home-control') }}"
+                />
+              </content:heading>
+              <content:body>
+                <p>{{ ftl('firefox-home-forget-printing') }}</p>
+              </content:body>
+            </include:illustration-card-2026>
+
+          </include:cards-list>
+
+          {{ marketing_opt_out_checkbox(id='marketing-opt-out-discover') }}
+          <include:download-firefox-button
+            analytics_id="set-default-download-firefox"
+            label="{{ ftl('download-button-download-firefox') }}"
+            cta_text="{{ ftl('download-button-download-firefox') }}"
+            block_position="primary cta"
+          />
+        </div>
      </section>
     </div>
 
+    {% set support_attrs = 'href="https://support.mozilla.org/kb/marketing-data" target="_blank" rel="noopener"' %}
     <div>
-      banner
+      <include:kit-banner theme="filled-face">
+        <content:heading>
+          <include:heading
+            level="h2"
+            heading_text="{{ ftl('firefox-home-questions') }}"
+            subheading_text="{{ ftl('firefox-home-mozilla-support-has', attrs=support_attrs ) }}"
+          />
+        </content:heading>
+      </include:kit-banner>
     </div>
   </main>
 </div>
