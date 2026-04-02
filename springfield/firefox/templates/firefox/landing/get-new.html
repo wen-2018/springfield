@@ -220,9 +220,100 @@
           />
 
 
+            <ul class="icon-text-list">
+              <li>
+                <span class="fl-icon-wrap">
+                  <include:icon icon_name="search" extra_class="fl-icon fl-icon-private-mode-fill" aria-hidden="true" />
+                </span>
+                <h3>{{ ftl('firefox-desktop-download-search-smarter')}}</h3>
+                <ul>
+                  <li>{{ ftl('firefox-desktop-download-search-from-address')}}</li>
+                  <li>{{ ftl('firefox-desktop-download-search-engine-options')}}</li>
+                  <li>{{ ftl('firefox-desktop-download-smart-search-suggestions')}}</li>
+                  <li>{{ ftl('firefox-desktop-download-bookmark-history')}}</li>
+                </ul>
+              </li>
+
+              <li>
+                <span class="fl-icon-wrap">
+                  <include:icon icon_name="arrow-trending" extra_class="fl-icon fl-icon-arrow-trending-fill" aria-hidden="true" />
+                </span>
+                <h3>{{ ftl('firefox-desktop-download-boost-your')}}</h3>
+                <ul>
+                  <li>{{ ftl('firefox-desktop-download-works-with-google')}}</li>
+                  <li>{{ ftl('firefox-desktop-download-built-in-screenshot')}}</li>
+                  <li>{{ ftl('firefox-desktop-download-bookmarks-manager')}}</li>
+                  <li>{{ ftl('firefox-desktop-download-autosuggest-urls')}}</li>
+                  <li>{{ ftl('firefox-desktop-download-sync-across-devices')}}</li>
+                  <li>{{ ftl('firefox-desktop-download-reader-mod')}}</li>
+                  <li>{{ ftl('firefox-desktop-download-spell-check')}}</li>
+                  <li>{{ ftl('firefox-desktop-download-pinned-tabs')}}</li>
+                </ul>
+              </li>
+
+              <li>
+                <span class="fl-icon-wrap">
+                  <include:icon icon_name="canvas-true" extra_class="fl-icon fl-icon-arrow-canvas-true" aria-hidden="true" />
+                </span>
+                <h3>{{ ftl('firefox-desktop-download-stream-share-play')}}</h3>
+                <ul>
+                  <li>{{ ftl('firefox-desktop-download-block-autoplay-of')}}</li>
+                  <li>{{ ftl('firefox-desktop-download-picture-in-picture ')}}</li>
+                  <li>{{ ftl('firefox-desktop-download-curated-content-on')}}</li>
+                  <li>{{ ftl('firefox-desktop-download-share-links')}}</li>
+                </ul>
+              </li>
+
+              <li>
+                <span class="fl-icon-wrap">
+                  <include:icon icon_name="private-mode" extra_class="fl-icon fl-icon-private-mode-fill" aria-hidden="true" />
+                </span>
+                <h3>{{ ftl('firefox-desktop-download-protect-your-privacy')}}</h3>
+                <ul>
+                  <li>{{ ftl('firefox-desktop-download-third-party-cookie')}}</li>
+                  <li><a href="{{ url('firefox.features.fingerprinting') }}">{{ ftl('firefox-desktop-download-fingerprinter-blocking')}}</a></li>
+                  <li>{{ ftl('firefox-desktop-download-private-browsing-mode')}}</li>
+                  <li>{{ ftl('firefox-desktop-download-individual-protections-report')}}</li>
+                </ul>
+              </li>
+
+              <li>
+                <span class="fl-icon-wrap">
+                  <include:icon icon_name="lock" extra_class="fl-icon fl-icon-lock-fill" aria-hidden="true" />
+                </span>
+                <h3>{{ ftl('firefox-desktop-download-secure-your-personal')}}</h3>
+                <ul>
+                  <li>{{ ftl('firefox-desktop-download-breached-website-alerts')}}</li>
+                  <li>{{ ftl('firefox-desktop-download-built-in-password')}}</li>
+                  <li>{{ ftl('firefox-desktop-download-clear-history')}}</li>
+                  <li>{{ ftl('firefox-desktop-download-form-autofill')}}</li>
+                  <li>{{ ftl('firefox-desktop-download-automatic-updates')}}</li>
+                </ul>
+              </li>
+
+              <li>
+                <span class="fl-icon-wrap">
+                  <include:icon icon_name="edit" extra_class="fl-icon fl-edit" aria-hidden="true" />
+                </span>
+                <h3>{{ ftl('firefox-desktop-download-customize-your-browser')}}</h3>
+                <ul>
+                  <li>{{ ftl('firefox-desktop-download-themes')}}</li>
+                  <li>{{ ftl('firefox-desktop-download-dark-mode')}}</li>
+                  <li>{{ ftl('firefox-desktop-download-library-of-extensions')}}</li>
+                  <li>{{ ftl('firefox-desktop-download-adjust-search-bar')}}</li>
+                  <li>{{ ftl('firefox-desktop-download-change-new-tab')}}</li>
+                </ul>
+              </li>
+            </ul>
 
 
-
+            {{ marketing_opt_out_checkbox(id='marketing-opt-out-primary') }}
+            <include:download-firefox-button
+              analytics_id="set-default-download-firefox"
+              label="{{ ftl('download-button-download-firefox') }}"
+              cta_text="{{ ftl('download-button-download-firefox') }}"
+              block_position="primary cta"
+            />
         </div>
      </section>
     </div>
