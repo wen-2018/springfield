@@ -1,0 +1,171 @@
+{#
+ This Source Code Form is subject to the terms of the Mozilla Public
+ License, v. 2.0. If a copy of the MPL was not distributed with this
+ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#}
+
+{% extends "cms/base-flare26.html" %}
+
+{% macro marketing_opt_out_checkbox(id='marketing-opt-out') -%}
+  <label for="{{ id }}" class="marketing-opt-out-checkbox-label hidden">
+    <input type="checkbox" id="{{ id }}" class="marketing-opt-out-checkbox-input">
+    <span class="marketing-opt-out-text">
+      {% set attrs = 'href="https://support.mozilla.org/kb/marketing-data" target="_blank" rel="noopener"' %}
+      {{ ftl('download-button-share-how-you-discovered', attrs=attrs)}}
+    </span>
+  </label>
+{%- endmacro %}
+
+{% block content %}
+<div class="fl-page">
+  <main class="fl-main has-gradient-bottom">
+    <div class="fl-split-page-upper has-gradient-bottom">
+      <section class="fl-section">
+        <div class="fl-section-container">
+
+          <include:intro slim media_position="right">
+            <content:heading>
+              <include:heading
+                level="h1"
+                superheading_text="{{ ftl('firefox-desktop-download-firefox') }}"
+                heading_text="{{ ftl('firefox-desktop-download-get-the-browser') }}"
+                subheading_text="{{ ftl('firefox-desktop-download-fast-reliable-private') }}"
+              />
+              <div class="c-intro-download">
+                {% block primary_cta %}
+                  {{ marketing_opt_out_checkbox(id='marketing-opt-out-primary') }}
+                  <include:download-firefox-button
+                    analytics_id="set-default-download-firefox"
+                    label="{{ ftl('download-button-download-firefox') }}"
+                    cta_text="{{ ftl('download-button-download-firefox') }}"
+                    block_position="primary cta"
+                  />
+                {% endblock %}
+
+                <div class="c-intro-download-alt"><a href="{{ firefox_url('desktop', 'all') }}">{{ ftl('firefox-desktop-download-download-options') }}</a></div>
+
+                <div class="c-intro-download-alt"><a href="https://support.mozilla.org/products/firefox{{ params }}&utm_content=browser-support" rel="external noopener" data-cta-text="Firefox browser support">{{ ftl('firefox-desktop-download-browser-support') }}</a></div>
+              </div>
+            </content:heading>
+
+            <content:media>
+              <img src="/media/img/firefox/landing/get/browser.jpg" srcset="/media/img/firefox/landing/get/browser-high-res.jpg" alt="firefox.com" />
+            </content:media>
+          </include:intro>
+        </div>
+      </section>
+    </div>
+
+    <div class="fl-split-page-lower">
+      <section class="fl-section">
+        <div class="fl-section-container">
+          <include:heading
+            level="h2"
+            heading_text="{{ ftl('firefox-home-latest-features') }}"
+          />
+        </div>
+
+        <include:cards-list>
+
+          <include:illustration-card-2026>
+            <content:media>
+                <img src="/media/img/firefox/landing/get/card-kit-in-box.jpg" width="340" height="400" alt="" aria-hidden />
+            </content:media>
+            <content:heading>
+              <include:heading
+                level="h3"
+                heading_text="{{ ftl('firefox-home-pick-up-where') }}"
+                superheading_text="{{ ftl('firefox-home-focus') }}"
+              />
+            </content:heading>
+            <content:body>
+              <p>{{ ftl('firefox-home-firefox-view-lets') }}</p>
+            </content:body>
+          </include:illustration-card-2026>
+
+          <include:illustration-card-2026>
+            <content:media>
+                <img src="/media/img/firefox/landing/get/card-report.jpg" width="340" height="400" alt="" aria-hidden />
+            </content:media>
+            <content:heading>
+              <include:heading
+                level="h3"
+                heading_text="{{ ftl('firefox-home-browse-knowing') }}"
+                superheading_text="{{ ftl('firefox-home-protection') }}"
+              />
+            </content:heading>
+            <content:body>
+              <p>{{ ftl('firefox-home-firefox-total-cookie') }}</p>
+            </content:body>
+          </include:illustration-card-2026>
+
+          <include:illustration-card-2026>
+            <content:media>
+                <img src="/media/img/firefox/landing/get/card-kit-paper.jpg" width="340" height="400" alt="" aria-hidden />
+            </content:media>
+            <content:heading>
+              <include:heading
+                level="h3"
+                heading_text="{{ ftl('firefox-home-pick-up-where') }}"
+                superheading_text="{{ ftl('firefox-home-control') }}"
+              />
+            </content:heading>
+            <content:body>
+              <p>{{ ftl('firefox-home-forget-printing') }}</p>
+            </content:body>
+          </include:illustration-card-2026>
+
+          <include:illustration-card-2026>
+            <content:media>
+                <img src="/media/img/firefox/landing/get/card-kit-in-box.jpg" width="340" height="400" alt="" aria-hidden />
+            </content:media>
+            <content:heading>
+              <include:heading
+                level="h3"
+                heading_text="{{ ftl('firefox-home-vpn') }}"
+                superheading_text="{{ ftl('firefox-home-protection') }}"
+              />
+            </content:heading>
+            <content:body>
+              <p>missing content</p>
+            </content:body>
+          </include:illustration-card-2026>
+
+        </include:cards-list>
+
+        <include:button
+          theme_class="button-secondary"
+          size_class="fl-button-large"
+          label="{{ ftl('firefox-home-see-release') }}"
+          link="{{ url('firefox.notes') }}"
+        />
+
+     </section>
+    </div>
+
+    <div class="fl-split-page-upper has-gradient-bottom">
+      <section class="fl-section">
+        <div class="fl-section-container">
+
+         Make Firefox your own
+
+        </div>
+       </section>
+    </div>
+
+    <div class="fl-split-page-lower">
+      <section class="fl-section">
+        <div class="fl-section-container">
+
+        Everything below the purple goes here.
+
+        </div>
+     </section>
+    </div>
+
+    <div>
+      banner
+    </div>
+  </main>
+</div>
+{% endblock %}
