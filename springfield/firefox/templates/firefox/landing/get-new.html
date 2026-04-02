@@ -16,6 +16,9 @@
   </label>
 {%- endmacro %}
 
+{% from "macros.html" import google_play_button, apple_app_store_button with context %}
+{% set ios_url = app_store_url('firefox', 'firefox-com-download') %}
+
 {% block content %}
 <div class="fl-page">
   <main class="fl-main has-gradient-bottom">
@@ -63,83 +66,164 @@
             level="h2"
             heading_text="{{ ftl('firefox-home-latest-features') }}"
           />
+
+          <include:cards-list>
+
+            <include:illustration-card-2026>
+              <content:media>
+                  <img src="/media/img/firefox/landing/get/card-kit-in-box.jpg" width="340" height="400" alt="" aria-hidden />
+              </content:media>
+              <content:heading>
+                <include:heading
+                  level="h3"
+                  heading_text="{{ ftl('firefox-home-pick-up-where') }}"
+                  superheading_text="{{ ftl('firefox-home-focus') }}"
+                />
+              </content:heading>
+              <content:body>
+                <p>{{ ftl('firefox-home-firefox-view-lets') }}</p>
+              </content:body>
+            </include:illustration-card-2026>
+
+            <include:illustration-card-2026>
+              <content:media>
+                  <img src="/media/img/firefox/landing/get/card-report.jpg" width="340" height="400" alt="" aria-hidden />
+              </content:media>
+              <content:heading>
+                <include:heading
+                  level="h3"
+                  heading_text="{{ ftl('firefox-home-browse-knowing') }}"
+                  superheading_text="{{ ftl('firefox-home-protection') }}"
+                />
+              </content:heading>
+              <content:body>
+                <p>{{ ftl('firefox-home-firefox-total-cookie') }}</p>
+              </content:body>
+            </include:illustration-card-2026>
+
+            <include:illustration-card-2026>
+              <content:media>
+                  <img src="/media/img/firefox/landing/get/card-kit-paper.jpg" width="340" height="400" alt="" aria-hidden />
+              </content:media>
+              <content:heading>
+                <include:heading
+                  level="h3"
+                  heading_text="{{ ftl('firefox-home-pick-up-where') }}"
+                  superheading_text="{{ ftl('firefox-home-control') }}"
+                />
+              </content:heading>
+              <content:body>
+                <p>{{ ftl('firefox-home-forget-printing') }}</p>
+              </content:body>
+            </include:illustration-card-2026>
+
+            <include:illustration-card-2026>
+              <content:media>
+                  <img src="/media/img/firefox/landing/get/card-kit-vpn.jpg" width="340" height="400" alt="" aria-hidden />
+              </content:media>
+              <content:heading>
+                <include:heading
+                  level="h3"
+                  heading_text="{{ ftl('firefox-home-vpn') }}"
+                  superheading_text="{{ ftl('firefox-home-protection') }}"
+                />
+              </content:heading>
+              <content:body>
+                <p>missing content</p>
+              </content:body>
+            </include:illustration-card-2026>
+
+          </include:cards-list>
+
+          <include:button
+            theme_class="button-secondary"
+            size_class="fl-button-large"
+            label="{{ ftl('firefox-home-see-release') }}"
+            link="{{ url('firefox.notes') }}"
+          />
         </div>
 
-        <include:cards-list>
+        <div class="fl-section-container">
+          <include:heading
+            level="h2"
+            heading_text="{{ ftl('firefox-home-do-what-you-do') }}"
+          />
 
-          <include:illustration-card-2026>
-            <content:media>
-                <img src="/media/img/firefox/landing/get/card-kit-in-box.jpg" width="340" height="400" alt="" aria-hidden />
-            </content:media>
+          <include:intro slim media_position="left">
             <content:heading>
               <include:heading
                 level="h3"
-                heading_text="{{ ftl('firefox-home-pick-up-where') }}"
-                superheading_text="{{ ftl('firefox-home-focus') }}"
+                heading_text="{{ ftl('firefox-desktop-download-we-block-the-ad') }}"
+                subheading_text="{{ ftl('firefox-desktop-download-ads-are-distracting') }}"
+              />
+              <include:uitour_button
+                theme_class="button-ghost fl-button-small"
+                label="{{ ftl('firefox-home-see-your-protection') }}"
+                disabled=""
               />
             </content:heading>
-            <content:body>
-              <p>{{ ftl('firefox-home-firefox-view-lets') }}</p>
-            </content:body>
-          </include:illustration-card-2026>
 
-          <include:illustration-card-2026>
             <content:media>
-                <img src="/media/img/firefox/landing/get/card-report.jpg" width="340" height="400" alt="" aria-hidden />
+              <img src="/media/img/firefox/landing/get/block-tracking.jpg" srcset="/media/img/firefox/landing/get/block-tracking-high-res.jpg" alt="" />
             </content:media>
+          </include:intro>
+
+          <include:intro slim media_position="right">
             <content:heading>
               <include:heading
                 level="h3"
-                heading_text="{{ ftl('firefox-home-browse-knowing') }}"
-                superheading_text="{{ ftl('firefox-home-protection') }}"
+                heading_text="{{ ftl('firefox-desktop-download-for-everyone') }}"
+                subheading_text="{{ ftl('firefox-home-available-in-over') }}"
               />
+              <a href="{{ url('firefox.sysreq') }}" data-cta-text="Review system requirements">{{ ftl('firefox-desktop-download-review-system-req') }}</a>
             </content:heading>
-            <content:body>
-              <p>{{ ftl('firefox-home-firefox-total-cookie') }}</p>
-            </content:body>
-          </include:illustration-card-2026>
 
-          <include:illustration-card-2026>
             <content:media>
-                <img src="/media/img/firefox/landing/get/card-kit-paper.jpg" width="340" height="400" alt="" aria-hidden />
+              <img src="/media/img/firefox/landing/get/kit-heart.jpg" srcset="/media/img/firefox/landing/get/kit-heart-high-res.jpg" alt="" />
             </content:media>
+          </include:intro>
+
+          <include:intro slim media_position="left">
             <content:heading>
               <include:heading
                 level="h3"
-                heading_text="{{ ftl('firefox-home-pick-up-where') }}"
-                superheading_text="{{ ftl('firefox-home-control') }}"
+                heading_text="{{ ftl('firefox-desktop-download-all-your-devices') }}"
+                subheading_text="{{ ftl('firefox-desktop-download-take-your-privacy') }}"
               />
-            </content:heading>
-            <content:body>
-              <p>{{ ftl('firefox-home-forget-printing') }}</p>
-            </content:body>
-          </include:illustration-card-2026>
+              <div>
+                <include:button
+                  theme_class="button-secondary fl-button-small ga-product-download "
+                  label="{{ ftl('firefox-home-google-play') }}"
+                  link="https://play.google.com/store/apps/details?id=org.mozilla.firefox&referrer=utm_source=www.firefox.com&utm_medium=referral&utm_campaign=download"
+                />
 
-          <include:illustration-card-2026>
+                <include:button
+                  theme_class="button-secondary fl-button-small"
+                  label="{{ ftl('firefox-home-app-store') }}"
+                  link="https://apps.apple.com/app/apple-store/id989804926"
+                />
+                {{ google_play_button('button-secondary fl-button-small') }}
+                {{ apple_app_store_button('button-secondary fl-button-small', href=ios_url) }}
+              </div>
+            </content:heading>
+
             <content:media>
-                <img src="/media/img/firefox/landing/get/card-kit-in-box.jpg" width="340" height="400" alt="" aria-hidden />
+              <img src="/media/img/firefox/landing/get/all-device.jpg" srcset="/media/img/firefox/landing/get/all-device-high-res.jpg" alt="" />
             </content:media>
-            <content:heading>
-              <include:heading
-                level="h3"
-                heading_text="{{ ftl('firefox-home-vpn') }}"
-                superheading_text="{{ ftl('firefox-home-protection') }}"
-              />
-            </content:heading>
-            <content:body>
-              <p>missing content</p>
-            </content:body>
-          </include:illustration-card-2026>
+          </include:intro>
+        </div>
 
-        </include:cards-list>
+        <div class="fl-section-container">
+          <include:heading
+            level="h2"
+            heading_text="{{ ftl('firefox-home-do-it-all') }}"
+          />
 
-        <include:button
-          theme_class="button-secondary"
-          size_class="fl-button-large"
-          label="{{ ftl('firefox-home-see-release') }}"
-          link="{{ url('firefox.notes') }}"
-        />
 
+
+
+
+        </div>
      </section>
     </div>
 
