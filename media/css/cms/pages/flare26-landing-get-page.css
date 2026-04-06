@@ -4,6 +4,15 @@
 * file, You can obtain one at https://mozilla.org/MPL/2.0/.
 */
 
+.fl-landing-get .fl-section-container {
+    margin-bottom: var(--token-layout-sm);
+}
+
+.fl-landing-get .fl-icon-wrap {
+    border-radius: var(--token-spacing-sm);
+}
+
+/* Opt-out checkbox */
 .fl-landing-get .c-intro-download {
     display: flex;
     flex-direction: column;
@@ -34,10 +43,6 @@
 }
 
 /* Latest Features section */
-.fl-landing-get .fl-section-container {
-    margin-bottom: var(--token-layout-sm);
-}
-
 .fl-landing-get .fl-release-notes-link {
     max-inline-size: fit-content;
     margin: 0 auto;
@@ -58,53 +63,92 @@ body.data-uitour .landing-get-uitour-report {
 }
 
 /* Do it All section */
-.fl-landing-get  .fl-do-it-all .icon-text-list {
+.fl-landing-get .fl-do-it-all .icon-text-list {
     --fl-card-grid-columns: repeat(1, minmax(0, 1fr));
     display: grid;
     grid-template-columns: var(--fl-card-grid-columns, minmax(0, 1fr));
 }
 
-.fl-landing-get  .fl-do-it-all .icon-text-list li {
+.fl-landing-get .fl-do-it-all .icon-text-list li {
     flex-direction: column;
     margin-bottom: 0;
 }
 
-.fl-landing-get  .fl-do-it-all .icon-text-list > li {
+.fl-landing-get .fl-do-it-all .icon-text-list > li {
     align-items: flex-start;
 }
 
-.fl-landing-get  .fl-do-it-all .icon-text-list > li ul {
+.fl-landing-get .fl-do-it-all .icon-text-list > li ul {
     margin-bottom: 0;
     list-style: square;
 }
 
-.fl-landing-get  .fl-do-it-all .fl-icon-wrap {
-    border-radius: var(--token-spacing-sm);
-}
-
-.fl-landing-get  .fl-do-it-all h3 {
+.fl-landing-get .fl-do-it-all h3 {
     font-size: 1rem;
     margin-bottom: 0;
 }
 
-.fl-landing-get  .fl-do-it-all .marketing-opt-out-checkbox-label {
+.fl-landing-get .fl-do-it-all .marketing-opt-out-checkbox-label {
     max-width: 60%;
     margin: 0 auto;
 }
 
-.fl-landing-get  .fl-do-it-all .marketing-opt-out-checkbox-input {
+.fl-landing-get .fl-do-it-all .marketing-opt-out-checkbox-input {
     block-size: 16px;
     inline-size: 16px;
 }
 
+/* Make Firefox your own section */
+.fl-landing-get .fl-make-firefox-your-own .icon-text-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.fl-landing-get .fl-make-firefox-your-own li {
+    flex-direction: column;
+}
+
+.fl-landing-get .fl-make-firefox-your-own .fl-icon-wrap {
+    background-color: var(--token-color-medium-purple);
+}
+
+.fl-landing-get .fl-make-firefox-your-own h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0;
+}
+
+.fl-landing-get .fl-make-firefox-your-own p {
+    margin-bottom: 0;
+}
+
+.fl-landing-get .fl-make-firefox-your-own img {
+    margin-bottom: 0;
+}
+
+.fl-landing-get .fl-section-container.fl-make-firefox-your-own {
+    margin-bottom: 0;
+}
+
+.fl-section:has(.fl-make-firefox-your-own) {
+    padding-bottom: 0;
+}
+
+.fl-split-page-upper:has(.fl-make-firefox-your-own) {
+    padding-bottom: 0;
+}
+
 @media (--viewport-sm-up) {
-    .fl-landing-get  .fl-do-it-all .icon-text-list {
+    .fl-landing-get .fl-do-it-all .icon-text-list {
         --fl-card-grid-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .fl-landing-get .fl-make-firefox-your-own .icon-text-list {
+        flex-direction: row;
     }
 }
 
 @media (--viewport-md-up) {
-    .fl-landing-get  .fl-do-it-all .icon-text-list {
+    .fl-landing-get .fl-do-it-all .icon-text-list {
         --fl-card-grid-columns: repeat(3, minmax(0, 1fr));
     }
 
