@@ -4,6 +4,52 @@
 * file, You can obtain one at https://mozilla.org/MPL/2.0/.
 */
 
-.fl-landing-get .fl-main {
-    border: 1px solid red;
+.fl-landing-get .c-intro-download {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: var(--fl-theme-font-size-body-xs);
+}
+
+.fl-landing-get .c-intro-download > label {
+    margin-block-end: 40px;
+}
+
+.fl-landing-get .c-intro-download > label input[type='checkbox']{
+    inline-size: 14px;
+    block-size: 14px;
+    vertical-align: baseline;
+}
+
+.fl-landing-get .c-intro-download .fl-download-firefox-button {
+    align-items: flex-start;
+}
+
+.fl-landing-get .c-intro-download .c-intro-download-alt {
+    text-align: start;
+}
+
+.fl-landing-get .c-intro-download .mzp-c-button-download-privacy-link {
+    font-size: var(--fl-theme-font-size-body-xs);
+}
+
+.fl-landing-get .fl-section-container {
+    margin-bottom: var(--token-layout-sm);
+}
+
+.fl-landing-get .fl-release-notes-link {
+    max-inline-size: fit-content;
+    margin: 0 auto;
+}
+
+@media (--viewport-md-up) {
+    .fl-landing-get .fl-heading-size-2 {
+        font-size: var(--fl-theme-font-size-heading-lg);
+    }
+}
+
+@media (--viewport-lg-up) {
+    .fl-landing-get .fl-section-container {
+        margin-bottom: var(--token-layout-lg);
+    }
 }

@@ -6,6 +6,14 @@
 
 {% extends "cms/base-flare26.html" %}
 
+{% block html_attrs %}data-promoted-page="true"{% endblock %}
+
+{% block canonical_urls %}<meta name="robots" content="noindex,follow">{% endblock %}
+
+{% block extrahead %}
+  {{ css_bundle('firefox_marketing_opt_out') }}
+{% endblock %}
+
 {% set params = '?utm_source=www.firefox.com&utm_medium=referral&utm_campaign=firefox-landing-get-refresh' %}
 
 {% macro marketing_opt_out_checkbox(id='marketing-opt-out') -%}
@@ -17,6 +25,16 @@
     </span>
   </label>
 {%- endmacro %}
+
+{% block stub_attribution %}
+  {% if settings.STUB_ATTRIBUTION_RATE %}
+    {{ super() }}
+    <!--[if IE 9]><!-->
+      {# Ensure opt-out runs in IE 10 / 11 since we also support stub attribution for those browsers. #}
+      {{ js_bundle('firefox_marketing_opt_out') }}
+    <!--<![endif]-->
+  {% endif %}
+{% endblock %}
 
 {% from "macros.html" import google_play_button, apple_app_store_button with context %}
 {% set ios_url = app_store_url('firefox', 'firefox-com-download') %}
@@ -40,7 +58,7 @@
                 {% block primary_cta %}
                   {{ marketing_opt_out_checkbox(id='marketing-opt-out-primary') }}
                   <include:download-firefox-button
-                    analytics_id="set-default-download-firefox"
+                    analytics_id="marketing-opt-out-primary"
                     label="{{ ftl('download-button-download-firefox') }}"
                     cta_text="{{ ftl('download-button-download-firefox') }}"
                     block_position="primary cta"
@@ -63,10 +81,10 @@
 
     <div class="fl-split-page-lower">
       <section class="fl-section">
-        <div class="fl-section-container">
+        <div class="fl-section-container fl-latest-features">
           <include:heading
             level="h2"
-            alignment_class="text-center"
+            alignment_class="fl-heading-size-2 text-center"
             heading_text="{{ ftl('firefox-home-latest-features') }}"
           />
 
@@ -74,7 +92,7 @@
 
             <include:illustration-card-2026>
               <content:media>
-                  <img src="/media/img/firefox/landing/get/card-kit-in-box.jpg" width="340" height="400" alt="" aria-hidden />
+                  <img src="/media/img/firefox/landing/get/card-kit-in-box.png" srcset="/media/img/firefox/landing/get/card-kit-in-box-high-res.png 2x" width="340" height="400" alt="" />
               </content:media>
               <content:heading>
                 <include:heading
@@ -90,7 +108,7 @@
 
             <include:illustration-card-2026>
               <content:media>
-                  <img src="/media/img/firefox/landing/get/card-report.jpg" width="340" height="400" alt="" aria-hidden />
+                  <img src="/media/img/firefox/landing/get/etp.png" srcset="/media/img/firefox/landing/get/etp-high-res.png 2x" width="340" height="400" alt="" />
               </content:media>
               <content:heading>
                 <include:heading
@@ -106,7 +124,7 @@
 
             <include:illustration-card-2026>
               <content:media>
-                  <img src="/media/img/firefox/landing/get/card-kit-paper.jpg" width="340" height="400" alt="" aria-hidden />
+                  <img src="/media/img/firefox/landing/get/card-kit-paper.png" srcset="/media/img/firefox/landing/get/card-kit-paper-high-res.png 2x" width="340" height="400" alt="" />
               </content:media>
               <content:heading>
                 <include:heading
@@ -122,7 +140,7 @@
 
             <include:illustration-card-2026>
               <content:media>
-                  <img src="/media/img/firefox/landing/get/card-kit-vpn.jpg" width="340" height="400" alt="" aria-hidden />
+                  <img src="/media/img/firefox/landing/get/card-kit-vpn.png" srcset="/media/img/firefox/landing/get/card-kit-vpn-high-res.png 2x" width="340" height="400" alt="" />
               </content:media>
               <content:heading>
                 <include:heading
@@ -139,7 +157,7 @@
           </include:cards-list>
 
           <include:button
-            theme_class="button-secondary"
+            theme_class="button-secondary fl-release-notes-link"
             size_class="fl-button-large"
             label="{{ ftl('firefox-home-see-release') }}"
             link="{{ url('firefox.notes') }}"
@@ -311,14 +329,15 @@
               </li>
             </ul>
 
-
-            {{ marketing_opt_out_checkbox(id='marketing-opt-out-features') }}
-            <include:download-firefox-button
-              analytics_id="set-default-download-firefox"
-              label="{{ ftl('download-button-download-firefox') }}"
-              cta_text="{{ ftl('download-button-download-firefox') }}"
-              block_position="primary cta"
-            />
+            {% block features_cta %}
+              {{ marketing_opt_out_checkbox(id='marketing-opt-out-features') }}
+              <include:download-firefox-button
+                analytics_id="marketing-opt-out-features"
+                label="{{ ftl('download-button-download-firefox') }}"
+                cta_text="{{ ftl('download-button-download-firefox') }}"
+                block_position="feature-tracking-protection-shield cta"
+              />
+            {% endblock %}
         </div>
      </section>
     </div>
@@ -439,8 +458,7 @@
 
             <include:illustration-card-2026>
               <content:media>
-                  <img src="/media/img/firefox/landing/get/etp.png" srcset="/media/img/firefox/landing/get/etp-high-res
-                  .png 2x" width="340" height="400" alt="" aria-hidden />
+                  <img src="/media/img/firefox/landing/get/etp.png" srcset="/media/img/firefox/landing/get/etp-high-res.png 2x" width="340" height="400" alt="" aria-hidden />
               </content:media>
               <content:heading>
                 <include:heading
@@ -519,13 +537,16 @@
 
           </include:cards-list>
 
-          {{ marketing_opt_out_checkbox(id='marketing-opt-out-discover') }}
-          <include:download-firefox-button
-            analytics_id="set-default-download-firefox"
-            label="{{ ftl('download-button-download-firefox') }}"
-            cta_text="{{ ftl('download-button-download-firefox') }}"
-            block_position="primary cta"
-          />
+          {% block discover_cta %}
+            {{ marketing_opt_out_checkbox(id='marketing-opt-out-discover') }}
+            <include:download-firefox-button
+              analytics_id="marketing-opt-out-discover"
+              label="{{ ftl('download-button-download-firefox') }}"
+              cta_text="{{ ftl('download-button-download-firefox') }}"
+              block_position="discover cta"
+            />
+          {% endblock %}
+
         </div>
      </section>
     </div>
