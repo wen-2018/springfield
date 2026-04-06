@@ -33,6 +33,7 @@
     font-size: var(--fl-theme-font-size-body-xs);
 }
 
+/* Latest Features section */
 .fl-landing-get .fl-section-container {
     margin-bottom: var(--token-layout-sm);
 }
@@ -42,9 +43,27 @@
     margin: 0 auto;
 }
 
+/* Firefox Got You Covered section */
+.fl-landing-get .fl-firefox-has-got-you {
+    padding-top: var(--token-layout-lg);
+}
+
+/* only include cta if UITour JS runs */
+.landing-get-uitour-report {
+    display: none;
+}
+
+body.data-uitour .landing-get-uitour-report {
+    display: inline-block;
+}
+
 @media (--viewport-md-up) {
     .fl-landing-get .fl-heading-size-2 {
         font-size: var(--fl-theme-font-size-heading-lg);
+    }
+
+    .fl-landing-get  .fl-firefox-has-got-you h3.fl-heading {
+        font-size: 2rem;
     }
 }
 
