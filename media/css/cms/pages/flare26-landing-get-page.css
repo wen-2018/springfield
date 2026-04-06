@@ -166,14 +166,18 @@ body.data-uitour .landing-get-uitour-report {
         font-size: var(--fl-theme-font-size-heading-lg);
     }
 
-    .fl-landing-get  .fl-firefox-has-got-you h3.fl-heading {
+    .fl-landing-get .fl-firefox-has-got-you h3.fl-heading {
         font-size: 2rem;
     }
 
-    .fl-card-gallery-grid {
+    .fl-landing-get .fl-non-profit .fl-card-gallery-grid {
       grid-template-areas:
         'main secondary'
         'main secondary';
+    }
+
+    .fl-landing-get .fl-favorite-browser .fl-card-grid:has(.fl-illustration-card-default) {
+        --fl-card-grid-columns: repeat(3, minmax(0, 1fr));
     }
 }
 
