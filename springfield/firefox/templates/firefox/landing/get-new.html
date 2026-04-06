@@ -388,14 +388,14 @@
 
     <div class="fl-split-page-lower">
       <section class="fl-section">
-        <div class="fl-section-container">
+        <div class="fl-section-container fl-non-profit">
           {% set mozorg_about_href = 'https://www.mozilla.org/' + LANG + '/about/' + params %}
           {% set created_attrs = 'href="%s" data-cta-text="created by Mozilla"'|safe|format(mozorg_about_href) %}
           <include:card-gallery>
             <content:heading>
               <include:heading
                 level="h2"
-                alignment_class="text-center"
+                alignment_class="fl-heading-size-2 text-center"
                 heading_text="{{ ftl('firefox-home-backed-by-the') }}"
               />
             </content:heading>
@@ -405,12 +405,14 @@
                 {{ ftl('firefox-desktop-download-challenging-the-status') }}
               </h3>
               <div class="fl-body">
-                {{ ftl('firefox-desktop-download-firefox-was-created') }}
+                {% set mozorg_about_href = 'https://www.mozilla.org/' + LANG + '/about/' + params %}
+                {% set created_attrs = 'href="%s" data-cta-text="created by Mozilla"'|safe|format(mozorg_about_href) %}
+                <p>{{ ftl('firefox-desktop-download-firefox-was-created', attrs=created_attrs) }}</p>
               </div>
             </content:main_card>
 
             <content:main_card_image>
-              <img src="/media/img/firefox/landing/get/browser-dark.jpg" srcset="/media/img/firefox/landing/get/browser-dark-high-res.jpg" alt="" loading="lazy" />
+              <img src="/media/img/firefox/landing/get/browser-kit.png" srcset="/media/img/firefox/landing/get/browser-kit-high-res.png 2x" alt="" loading="lazy" />
             </content:main_card_image>
 
             <content:secondary_card>
@@ -419,15 +421,13 @@
               </h3>
               <div class="fl-body">
                 {% set privacy_href = 'https://www.mozilla.org/' + LANG + '/privacy/' + params %}
-                {% set internet_attrs = 'href="%s" data-cta-text="Personal Data Promise"'|safe|format(privacy_href) %}
-                {{ ftl('firefox-desktop-download-as-the-internet-v2') }}
+                {% set internet_attrs = 'href="%s" data-cta-text="Privacy Notice"'|safe|format(privacy_href) %}
+                <p>{{ ftl('firefox-desktop-download-as-the-internet-v2', attrs=internet_attrs) }}</p>
               </div>
             </content:secondary_card>
 
             <content:secondary_card_image>
-              <img src="/media/img/firefox/landing/get/browser-dark.jpg"
-                  alt=""
-                  loading="lazy" />
+              <img class="keyhole" src="/media/img/firefox/landing/get/keyhole.png" srcset="/media/img/firefox/landing/get/keyhole-high-res.png" alt="" loading="lazy" />
             </content:secondary_card_image>
           </include:card-gallery>
 

@@ -137,6 +137,16 @@ body.data-uitour .landing-get-uitour-report {
     padding-bottom: 0;
 }
 
+/* Non-profit section */
+.fl-landing-get .fl-non-profit .fl-card-gallery-callout-card {
+    display: none;
+}
+
+.fl-landing-get .fl-non-profit .keyhole {
+    max-width: 243px;
+    margin: auto;
+}
+
 @media (--viewport-sm-up) {
     .fl-landing-get .fl-do-it-all .icon-text-list {
         --fl-card-grid-columns: repeat(2, minmax(0, 1fr));
@@ -158,6 +168,12 @@ body.data-uitour .landing-get-uitour-report {
 
     .fl-landing-get  .fl-firefox-has-got-you h3.fl-heading {
         font-size: 2rem;
+    }
+
+    .fl-card-gallery-grid {
+      grid-template-areas:
+        'main secondary'
+        'main secondary';
     }
 }
 
