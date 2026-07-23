@@ -85,6 +85,17 @@ html {
     z-index: 1;
 }
 
+.fl-logo-fx.fl-logo-share-fx {
+    background-image: none;
+    inline-size: 209px;
+}
+
+.fl-logo-fx.fl-logo-share-fx > img {
+    display: block;
+    margin: 0;
+    max-block-size: unset;
+}
+
 /* Easter egg: once the hover WebM has buffered (JS adds .fl-video-ready), hide
    the static wordmark <img>. Removing the video on teardown reverses this. */
 .fl-logo-fx:has(.fl-video-ready) img {
@@ -195,6 +206,10 @@ html {
 
 .fl-header .fl-menu-top-level-link:hover {
     text-decoration: none;
+}
+
+.fl-header:has(.fl-logo-share-fx) {
+    padding: var(--token-spacing-lg);
 }
 
 /* ================================================
