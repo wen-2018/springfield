@@ -2396,7 +2396,6 @@ class ReferralHubPage(AbstractSpringfieldCMSPage):
 
     upper_content = StreamField(
         [
-            ("intro", IntroBlock()),
             ("showcase", ShowcaseBlock()),
         ],
         null=True,
@@ -2415,7 +2414,6 @@ class ReferralHubPage(AbstractSpringfieldCMSPage):
     )
     extra_content = StreamField(
         [
-            ("intro", IntroBlock()),
             ("showcase", ShowcaseBlock()),
         ],
         null=True,
