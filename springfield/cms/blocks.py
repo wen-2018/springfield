@@ -1284,7 +1284,7 @@ def BaseContentBlock(allow_uitour=False, **kwargs):
         buttons = MixedButtonsBlock(
             button_types=get_button_types(allow_uitour),
             min_num=0,
-            max_num=3,
+            max_num=5,
             required=False,
         )
 
