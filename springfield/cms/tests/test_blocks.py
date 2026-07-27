@@ -2775,6 +2775,14 @@ def test_showcase_block(index_page, placeholder_images, rf):
             heading = showcase_el.find(heading_tag, class_="fl-heading")
             assert heading and headline_text in heading.get_text()
 
+            description = showcase_el.find("div", class_="fl-showcase-description")
+            if variant["value"].get("description"):
+                description_text = BeautifulSoup(variant["value"]["description"], "html.parser").get_text()
+                assert description, "Expected .fl-showcase-description to be present when description is set"
+                assert description_text in description.get_text()
+            else:
+                assert not description, "Expected .fl-showcase-description to be absent when no description is set"
+
             figure = showcase_el.find("figure", class_="fl-showcase-image")
             assert figure
 
@@ -2798,8 +2806,9 @@ def test_showcase_block(index_page, placeholder_images, rf):
                 caption_title_text = BeautifulSoup(variant["value"]["caption_title"], "html.parser").get_text()
                 assert caption_title_text in caption.get_text()
 
-            caption_description_text = BeautifulSoup(variant["value"]["caption_description"], "html.parser").get_text()
-            assert caption_description_text in caption.get_text()
+            if variant["value"].get("caption_description"):
+                caption_description_text = BeautifulSoup(variant["value"]["caption_description"], "html.parser").get_text()
+                assert caption_description_text in caption.get_text()
 
             cta = showcase_el.find("div", class_="fl-showcase-cta")
             if variant["value"].get("cta"):

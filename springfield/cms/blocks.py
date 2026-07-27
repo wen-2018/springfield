@@ -2650,9 +2650,10 @@ class ShowcaseSettings(blocks.StructBlock):
 class ShowcaseBlock(blocks.StructBlock):
     settings = ShowcaseSettings()
     headline = RichTextBlock(features=HEADING_TEXT_FEATURES)
+    description = RichTextBlock(features=HEADING_TEXT_FEATURES, required=False)
     media = MediaBlock(max_num=1)
     caption_title = RichTextBlock(features=HEADING_TEXT_FEATURES, required=False)
-    caption_description = RichTextBlock(features=HEADING_TEXT_FEATURES)
+    caption_description = RichTextBlock(features=HEADING_TEXT_FEATURES, required=False)
     cta = MixedButtonsBlock(
         button_types=get_button_types(),
         min_num=0,

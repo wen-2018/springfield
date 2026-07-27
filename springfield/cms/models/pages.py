@@ -2394,6 +2394,41 @@ class ReferralHubPage(AbstractSpringfieldCMSPage):
     parent_page_types = ["cms.HomePage"]
     template = "cms/referral_hub_page.html"
 
+    upper_content = StreamField(
+        [
+            ("intro", IntroBlock()),
+            ("showcase", ShowcaseBlock()),
+        ],
+        null=True,
+        blank=True,
+        use_json_field=True,
+    )
+    lower_content = StreamField(
+        [
+            ("intro", IntroBlock()),
+            ("cards_list", CardsListBlock(template="cms/blocks/sections/cards-list-section.html")),
+            ("kit_banner", KitBannerBlock()),
+        ],
+        null=True,
+        blank=True,
+        use_json_field=True,
+    )
+    extra_content = StreamField(
+        [
+            ("intro", IntroBlock()),
+            ("showcase", ShowcaseBlock()),
+        ],
+        null=True,
+        blank=True,
+        use_json_field=True,
+    )
+
+    content_panels = AbstractSpringfieldCMSPage.content_panels + [
+        FieldPanel("upper_content"),
+        FieldPanel("lower_content"),
+        FieldPanel("extra_content"),
+    ]
+
     class Meta:
         verbose_name = "Referral Program: Referral Hub Page"
 
