@@ -1,0 +1,17 @@
+{#
+ This Source Code Form is subject to the terms of the Mozilla Public
+ License, v. 2.0. If a copy of the MPL was not distributed with this
+ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#}
+
+<div id="fl-tab-panel-{{ section_id }}-{{ tab_index }}" role="tabpanel" aria-labelledby="fl-tab-{{ section_id }}-{{ tab_index }}" class="fl-tab">
+  {% if value.heading %}
+    <div class="fl-tab-heading">{{ value.heading|richtext|remove_p_tag }}</div>
+  {% endif %}
+  {% if value.description %}
+    <div class="fl-tab-description">{{ value.description|richtext }}</div>
+  {% endif %}
+  {% if value.note %}
+    <div class="fl-tab-note">{{ value.note|richtext }}</div>
+  {% endif %}
+</div>

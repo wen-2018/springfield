@@ -1252,11 +1252,37 @@ class QRCodeBlock(blocks.StructBlock):
         template = "cms/blocks/qr-code.html"
 
 
+class TabBlock(blocks.StructBlock):
+    tab_name = blocks.CharBlock(label="Tab name")
+    heading = RichTextBlock(features=HEADING_TEXT_FEATURES, required=False)
+    description = RichTextBlock(features=EXPANDED_TEXT_FEATURES, required=False)
+    note = RichTextBlock(features=HEADING_TEXT_FEATURES, required=False)
+
+    class Meta:
+        label = "Tab"
+        label_format = "{tab_name}"
+        template = "cms/blocks/tab.html"
+
+
+class TabsBlock(blocks.StructBlock):
+    section_id = blocks.CharBlock(
+        label="Section ID",
+        help_text="Unique identifier used to namespace the tab element IDs. Must be unique across the page.",
+    )
+    tabs = blocks.ListBlock(TabBlock(), required=False)
+
+    class Meta:
+        label = "Tabs"
+        label_format = "Tabs"
+        template = "cms/blocks/tabs.html"
+
+
 class MediaBlock(blocks.StreamBlock):
     image = ImageVariantsBlock(required=False)
     video = VideoBlock(required=False)
     animation = AnimationBlock(required=False)
     qr_code = QRCodeBlock(required=False)
+    tabs = TabsBlock(required=False)
 
     class Meta:
         label = "Media"

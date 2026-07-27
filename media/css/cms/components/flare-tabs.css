@@ -1,0 +1,64 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+.fl-tabs {
+    [role='tablist'] {
+        background-color: var(--theme-tabs-nav-background);
+        border-radius: 300px;
+        display: flex;
+        gap: 0;
+        justify-content: center;
+        margin-block-end: var(--token-layout-xs);
+        padding: var(--token-spacing-md) var(--token-spacing-lg);
+    }
+
+    [role='tab'] {
+        border: none;
+        inline-size: 100%;
+        padding: 0;
+    }
+
+    [role='tab'],
+    [role='tab']:focus,
+    [role='tab']:hover {
+        cursor: pointer;
+    }
+
+    [role='tab'][aria-selected='true'] {
+        background-color: var(--theme-tabs-tab-selected-background);
+        color: var(--theme-tabs-tab-selected-color);
+        font-weight: var(--token-font-weight-bold);
+    }
+
+    [role='tab'][aria-selected='false'] {
+        font-weight: var(--token-font-weight-regular);
+    }
+
+    [role='tab'] span.focus {
+        display: inline-block;
+        padding: var(--token-spacing-md);
+    }
+
+    [role='tab']:hover span.focus,
+    [role='tab']:focus span.focus,
+    [role='tab']:active span.focus {
+        color: var(--theme-tabs-tab-color-hover);
+    }
+
+    [role='tabpanel'].is-hidden {
+        display: none;
+    }
+}
+
+.no-js .privacy-bundle-pricing .billing-tabs {
+    [role='tablist'] {
+        display: none;
+    }
+
+    [role='tabpanel'].is-hidden {
+        display: block;
+    }
+}
