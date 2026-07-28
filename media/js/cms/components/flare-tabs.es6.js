@@ -45,6 +45,9 @@ class TabsAutomatic {
             const isCurrent = currentTab === tab;
 
             tab.setAttribute('aria-selected', isCurrent ? 'true' : 'false');
+            // Tabindex: only the current tab is in the keyboard focus
+            // order, the rest are reachable via arrow/Home/End keys.
+            tab.setAttribute('tabindex', isCurrent ? '0' : '-1');
             if (tabpanel) {
                 tabpanel.classList.toggle('is-hidden', !isCurrent);
             }

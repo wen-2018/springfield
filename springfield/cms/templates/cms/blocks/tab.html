@@ -6,12 +6,12 @@
 
 <div id="fl-tab-panel-{{ section_id }}-{{ tab_index }}" role="tabpanel" aria-labelledby="fl-tab-{{ section_id }}-{{ tab_index }}" class="fl-tab">
   {% if value.heading %}
-    <div class="fl-tab-heading">{{ value.heading|richtext|remove_p_tag }}</div>
+    <h2 class="fl-heading-size-2">{{ value.heading|richtext|remove_p_tag }}</h2>
   {% endif %}
   {% if value.description %}
-    <div class="fl-tab-description">{{ value.description|richtext }}</div>
+    <p class="fl-tab-description">{{ value.description|richtext }}</p>
   {% endif %}
   {% if value.note %}
-    <div class="fl-tab-note">{{ value.note|richtext }}</div>
+    <small class="fl-tab-note">{{ value.note|richtext }}</small>
   {% endif %}
 </div>
