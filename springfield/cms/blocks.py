@@ -1252,10 +1252,68 @@ class QRCodeBlock(blocks.StructBlock):
         template = "cms/blocks/qr-code.html"
 
 
+class ReferralControlsBlock(blocks.StructBlock):
+    """Copy / QR / share controls for a referral invite link.
+
+    Two different URLs are in play, and these controls must only ever expose the
+    second one:
+
+    * ``/invite/?ref_key=TEST23456X`` -- the referrer's own hub page. Private.
+    * ``/get-firefox/?invitation=X65432FAKE`` -- the link handed to friends.
+
+    ``ReferralHubPage.get_context`` maps the first to the second and publishes it
+    as ``invite_url`` on the template context, so the URL is deliberately not
+    editable here; editors only control the labels. Renders nothing when
+    ``invite_url`` is empty, which is the case for a hub page opened without a
+    ``ref_key``.
+    """
+
+    copy_label = blocks.CharBlock(default="Copy link", help_text="Label for the button that copies the invite link.")
+    copy_success_label = blocks.CharBlock(default="Link copied!", help_text="Label shown briefly after the link is copied.")
+    email_label = blocks.CharBlock(default="Share by email", help_text="Label for the link that opens an email draft.")
+    email_subject = blocks.CharBlock(
+        default="I am inviting you to try Firefox",
+        help_text="Subject line of the email draft.",
+    )
+    email_body = blocks.TextBlock(
+        default=(
+            "Here's how to download Firefox. I wanted to share a browser with you "
+            "that protects your privacy and gives you more control online. {invite link}"
+        ),
+        help_text=(
+            "Body of the email draft. Use {invite link} where the invitation link should go. "
+            "If you leave it out, the link is appended to the end so it is never missing."
+        ),
+    )
+    qr_label = blocks.CharBlock(default="Scan to open the invite link", help_text="Accessible label shown under the QR code.")
+
+    class Meta:
+        label = "Referral controls"
+        label_format = "Referral controls"
+        template = "cms/blocks/referral-controls.html"
+
+
+class TabReferralControlsBlock(blocks.StreamBlock):
+    """Wrapper making ReferralControlsBlock a genuinely optional tab field.
+
+    A nested StructBlock cannot be used directly: StructValue is an OrderedDict
+    that is always populated with its children's defaults, so it is always
+    truthy and the template could never tell "not added" from "added". A
+    StreamBlock capped at one child is the same approach MediaBlock uses.
+    """
+
+    referral_controls = ReferralControlsBlock()
+
+    class Meta:
+        label = "Referral controls"
+
+
 class TabBlock(blocks.StructBlock):
     tab_name = blocks.CharBlock(label="Tab name")
     heading = RichTextBlock(features=HEADING_TEXT_FEATURES, required=False)
+    image = ImageChooserBlock(required=False)
     description = RichTextBlock(features=EXPANDED_TEXT_FEATURES, required=False)
+    referral_controls = TabReferralControlsBlock(max_num=1, min_num=0, required=False)
     note = RichTextBlock(features=HEADING_TEXT_FEATURES, required=False)
 
     class Meta:

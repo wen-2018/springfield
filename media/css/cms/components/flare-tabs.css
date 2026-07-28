@@ -52,6 +52,13 @@
         color: var(--theme-tabs-tab-color-hover);
     }
 
+    .fl-tab-image {
+        block-size: auto;
+        display: block;
+        margin: 0 auto var(--token-layout-xs);
+        max-inline-size: 100%;
+    }
+
     [role='tabpanel'].is-hidden {
         display: none;
     }

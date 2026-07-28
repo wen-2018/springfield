@@ -4,7 +4,7 @@
 
 import re
 from unittest import mock
-from urllib.parse import parse_qs, urlparse, urlunparse
+from urllib.parse import parse_qs, unquote, urlparse, urlunparse
 
 from django.conf import settings
 from django.template.loader import render_to_string
@@ -39,6 +39,7 @@ from springfield.cms.blocks import (
     SectionBlock,
     SetAsDefaultButtonBlock,
     SpringfieldLinkBlock,
+    TabBlock,
     TwoColumnCardBlock,
     UITourButtonBlock,
     UntranslatableCharBlock,
@@ -4325,3 +4326,224 @@ def test_card_block(index_page, placeholder_images, rf):
                     block_index=section_index + 1,
                     card_index=card_i + 1,
                 )
+
+
+# Referral controls (inside TabBlock)
+
+REFERRAL_CONTROLS_LABELS = {
+    "copy_label": "Grab your link",
+    "copy_success_label": "Got it!",
+    "email_label": "Send an email",
+    "email_subject": "Firefox is worth a look",
+    "email_body": "Try this browser. {invite link} Hope you like it.",
+    "qr_label": "Point a camera at this",
+}
+
+# The referral program has two distinct URLs, and the controls must share the
+# second one, never the first:
+#
+#   Hub    /invite/?ref_key=TEST23456X          the referrer's own private page
+#   Invite /get-firefox/?invitation=X65432FAKE  the link handed to friends
+#
+# ReferralHubPage.get_context maps ref_key -> invite_url via the placeholder
+# _referral_id_to_invite_code (reverse the key, swap a leading TSET for FAKE).
+# TEST23456X is a real dummy ref_key from bootstrap_dummy_referral_data.
+REFERRAL_HUB_URL = "/invite/?ref_key=TEST23456X"
+INVITE_URL = "http://testserver/get-firefox/?invitation=X65432FAKE"
+
+
+def _tab_value(referral_controls=True, **overrides):
+    """Build a TabBlock value.
+
+    ``referral_controls`` takes True for the default labels, False for a tab
+    without controls, or an explicit raw stream list to vary a single field.
+    """
+    raw = {
+        "tab_name": "First tab",
+        "heading": "<p>Tab heading</p>",
+        "description": "<p>Tab description</p>",
+        "note": "<p>Tab note</p>",
+        "referral_controls": [],
+    }
+    if referral_controls is True:
+        raw["referral_controls"] = [{"type": "referral_controls", "value": dict(REFERRAL_CONTROLS_LABELS)}]
+    elif referral_controls:
+        raw["referral_controls"] = referral_controls
+    raw.update(overrides)
+    return TabBlock().to_python(raw)
+
+
+def _render_tab(referral_controls=True, invite_url=INVITE_URL, **overrides):
+    block = TabBlock()
+    value = _tab_value(referral_controls=referral_controls, **overrides)
+    return block.render(value, context={"invite_url": invite_url, "section_id": "hub", "tab_index": 1})
+
+
+def test_tab_block_renders_referral_controls_with_all_labels():
+    soup = BeautifulSoup(_render_tab(), "html.parser")
+
+    controls = soup.find("div", class_="fl-referral-controls")
+    assert controls is not None
+
+    copy_button = controls.find("button", attrs={"data-js": "fl-copy-to-clipboard"})
+    assert copy_button["data-copy-value"] == INVITE_URL
+    assert copy_button["data-label-success"] == REFERRAL_CONTROLS_LABELS["copy_success_label"]
+    assert copy_button.find("span", class_="fl-copy-to-clipboard-label").get_text(strip=True) == (REFERRAL_CONTROLS_LABELS["copy_label"])
+    assert (
+        copy_button.find("span", class_="fl-copy-to-clipboard-label-success").get_text(strip=True) == (REFERRAL_CONTROLS_LABELS["copy_success_label"])
+    )
+
+    email_link = controls.find("a", class_="fl-referral-controls-share-email")
+    assert REFERRAL_CONTROLS_LABELS["email_label"] in email_link.get_text(strip=True)
+    assert email_link["href"].startswith("mailto:?subject=")
+
+    assert controls.find("p", class_="fl-referral-controls-qr-label").get_text(strip=True) == (REFERRAL_CONTROLS_LABELS["qr_label"])
+
+
+def _email_href(html):
+    return BeautifulSoup(html, "html.parser").find("a", class_="fl-referral-controls-share-email")["href"]
+
+
+def _email_params(html):
+    """Read the mailto: params the way a mail client does.
+
+    Deliberately percent-decode only, rather than using parse_qs: parse_qs also
+    turns "+" into a space, which would mask the difference between RFC 6068
+    percent-encoding and form encoding. A mail client treats "+" literally, so a
+    body encoded with quote_plus shows up full of plus signs.
+    """
+    href = _email_href(html)
+    # mailto: has no netloc, so the params live in the path; split it by hand.
+    query = href.split("?", 1)[1]
+    return {key: unquote(raw) for key, raw in (param.split("=", 1) for param in query.split("&"))}
+
+
+def test_tab_block_referral_controls_email_body_uses_percent_encoded_spaces():
+    """Spaces must be %20, never "+", or mail clients render the plus signs."""
+    href = _email_href(_render_tab())
+
+    assert "+" not in href
+    assert "%20" in href
+
+
+def test_tab_block_referral_controls_email_href_encodes_subject_and_body():
+    params = _email_params(_render_tab())
+
+    assert params["subject"] == REFERRAL_CONTROLS_LABELS["email_subject"]
+    # The {invite link} placeholder is replaced in place, keeping the copy
+    # written around it on both sides.
+    assert params["body"] == f"Try this browser. {INVITE_URL} Hope you like it."
+
+
+def test_tab_block_referral_controls_email_body_appends_link_when_placeholder_removed():
+    """The link must survive an editor deleting the {invite link} placeholder."""
+    labels = dict(REFERRAL_CONTROLS_LABELS, email_body="Just some copy with no placeholder.")
+    html = _render_tab(referral_controls=[{"type": "referral_controls", "value": labels}])
+
+    assert _email_params(html)["body"] == f"Just some copy with no placeholder.\n\n{INVITE_URL}"
+
+
+def test_tab_block_referral_controls_email_body_replaces_every_placeholder():
+    labels = dict(REFERRAL_CONTROLS_LABELS, email_body="{invite link} or later: {invite link}")
+    html = _render_tab(referral_controls=[{"type": "referral_controls", "value": labels}])
+
+    assert _email_params(html)["body"] == f"{INVITE_URL} or later: {INVITE_URL}"
+    assert "{invite link}" not in html
+
+
+def test_tab_block_referral_controls_email_body_encodes_ampersands_in_the_invite_url():
+    """An unencoded & in the body would truncate it and inject a mailto header."""
+    invite_url = "http://testserver/get-firefox/?invitation=X65432FAKE&utm_source=referral"
+    html = _render_tab(invite_url=invite_url)
+    params = _email_params(html)
+
+    # The whole URL survives, and the body is not cut off at the "&"...
+    assert params["body"] == f"Try this browser. {invite_url} Hope you like it."
+    # ...nor did the tail leak out as a separate mailto header.
+    assert set(params) == {"subject", "body"}
+
+
+def test_tab_block_referral_controls_qr_code_encodes_invite_url():
+    soup = BeautifulSoup(_render_tab(), "html.parser")
+    qr = soup.find("div", class_="fl-referral-controls-qr-code")
+
+    # The QR is decorative: the copy button already exposes the link.
+    assert qr["aria-hidden"] == "true"
+    assert qr.find("svg") is not None
+
+
+def test_tab_block_referral_controls_never_expose_the_hub_url():
+    """The controls share the invite link, never the referrer's own hub URL.
+
+    Sharing the hub URL would hand a friend the referrer's private dashboard
+    (and their ref_key) instead of a Firefox download page.
+    """
+    html = _render_tab()
+    controls = BeautifulSoup(html, "html.parser").find("div", class_="fl-referral-controls")
+    rendered = str(controls)
+
+    assert "ref_key" not in rendered
+    assert "/invite/" not in rendered
+    assert "TEST23456X" not in rendered
+    # ...and the invite link reaches both share affordances: the copy button
+    # and the email body.
+    assert rendered.count("X65432FAKE") == 2
+
+
+def test_tab_block_omits_referral_controls_when_not_added():
+    soup = BeautifulSoup(_render_tab(referral_controls=False), "html.parser")
+
+    assert soup.find("div", class_="fl-referral-controls") is None
+
+
+def test_tab_block_renders_when_referral_controls_key_absent_from_stored_json():
+    """Tabs saved before referral_controls existed have no such key at all.
+
+    tab.html includes the field unguarded, which is only safe because
+    StructBlock.to_python falls back to the child's get_default() for missing
+    keys, and an empty StreamValue renders to nothing. Guards against a future
+    swap to a plain StructBlock, whose StructValue would always be truthy and
+    would start rendering controls on every pre-existing tab.
+    """
+    block = TabBlock()
+    legacy_raw = {
+        "tab_name": "Legacy tab",
+        "heading": "<p>Legacy heading</p>",
+        "description": "<p>Legacy description</p>",
+        "note": "<p>Legacy note</p>",
+    }
+    value = block.to_python(legacy_raw)
+
+    assert len(value["referral_controls"]) == 0
+
+    html = block.render(value, context={"invite_url": INVITE_URL, "section_id": "hub", "tab_index": 1})
+    soup = BeautifulSoup(html, "html.parser")
+
+    assert soup.find("div", class_="fl-referral-controls") is None
+    # The rest of the panel still renders.
+    assert soup.find("p", class_="fl-tab-description").get_text(strip=True) == "Legacy description"
+
+
+def test_tab_block_omits_referral_controls_when_invite_url_missing():
+    """A Referral Hub page opened without ?ref_key= has an empty invite_url."""
+    soup = BeautifulSoup(_render_tab(invite_url=""), "html.parser")
+
+    assert soup.find("div", class_="fl-referral-controls") is None
+    assert soup.find("button", attrs={"data-js": "fl-copy-to-clipboard"}) is None
+
+
+def test_tab_block_renders_referral_controls_between_description_and_note():
+    soup = BeautifulSoup(_render_tab(), "html.parser")
+    panel = soup.find("div", class_="fl-tab")
+
+    order = []
+    for child in panel.find_all(["p", "small", "div"], recursive=True):
+        classes = child.get("class") or []
+        if "fl-tab-description" in classes:
+            order.append("description")
+        elif "fl-referral-controls" in classes:
+            order.append("controls")
+        elif "fl-tab-note" in classes:
+            order.append("note")
+
+    assert order == ["description", "controls", "note"]

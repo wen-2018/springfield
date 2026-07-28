@@ -8,9 +8,21 @@
   {% if value.heading %}
     <h2 class="fl-heading-size-2">{{ value.heading|richtext|remove_p_tag }}</h2>
   {% endif %}
+  {% if value.image %}
+    {{ srcset_image(
+        value.image,
+        "width-{200,400,600,800,1000,1200}",
+        sizes="(min-width: 1024px) 50vw, 100vw",
+        width=value.image.width,
+        height=value.image.height,
+        loading="lazy",
+        class="fl-tab-image",
+    ) }}
+  {% endif %}
   {% if value.description %}
     <p class="fl-tab-description">{{ value.description|richtext }}</p>
   {% endif %}
+  {% include_block value.referral_controls %}
   {% if value.note %}
     <small class="fl-tab-note">{{ value.note|richtext }}</small>
   {% endif %}
