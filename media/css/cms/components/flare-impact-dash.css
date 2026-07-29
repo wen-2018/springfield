@@ -5,6 +5,16 @@
  */
 
 /*
+ * Optional editor-written line above the badges, already carrying the install
+ * count. Centered to match the badges' own text-align.
+ */
+.fl-impact-dash-summary {
+    font-size: var(--token-font-size-lg);
+    margin: var(--token-layout-xs) 0 0;
+    text-align: center;
+}
+
+/*
  * The impact dashboard owns the responsive layout of its badge array: a
  * wrapping two-column grid on small screens, one row from md up. There are no
  * editor-facing layout options by design.
@@ -16,6 +26,14 @@
     list-style: none;
     margin: var(--token-layout-xs) auto 0;
     padding: 0;
+}
+
+/*
+ * The list already owns the space above itself, so tighten it when a summary is
+ * what it follows -- the two are one unit, not two stacked sections.
+ */
+.fl-impact-dash-summary + .fl-impact-dash {
+    margin-block-start: var(--token-spacing-md);
 }
 
 @media (--viewport-md-up) {

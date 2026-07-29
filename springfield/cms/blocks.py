@@ -1321,6 +1321,10 @@ class BadgeBlock(blocks.StructBlock):
     install. Locales with three or more plural categories cannot be expressed;
     that is a repo-wide constraint, as there is no ngettext usage and no Fluent
     plural selector anywhere in the codebase.
+
+    ``message`` is the dashboard's summary line for the stretch of the journey
+    where this badge is the last one earned, so it belongs to the badge rather
+    than to the dashboard: the copy that suits 1 install does not suit 100.
     """
 
     image = ImageChooserBlock(required=False, help_text="Badge artwork. Optional.")
@@ -1343,6 +1347,16 @@ class BadgeBlock(blocks.StructBlock):
         default="badge name",
         help_text='Badge name, like "Connector", "Supporter", etc.',
     )
+    message = blocks.CharBlock(
+        required=False,
+        label="Message",
+        help_text=(
+            "Optional line shown above the badges while this is the highest badge unlocked. "
+            "Use {install count} where the number of successful installs should go, e.g. "
+            '"You have helped {install count} people switch to Firefox." Leave blank to show '
+            "no message at this milestone."
+        ),
+    )
 
     class Meta:
         label = "Badge"
@@ -1357,8 +1371,25 @@ class ImpactDashBlock(blocks.StructBlock):
     Only lights up on the Referral Hub page, which is the only page that puts
     ``install_count`` on the template context. TabBlock is reachable from
     MediaBlock on many other page models, where every badge stays locked.
+
+    Above the badges sits one optional message, chosen by progress: the message
+    of the furthest badge unlocked, or ``locked_summary`` while none is. Exactly
+    one is rendered, so the two never compete for the same line.
     """
 
+    #: Placeholder an editor writes in a message to mark where the install count
+    #: goes. Same convention as {invite link} in ReferralControlsBlock.email_body.
+    INSTALL_COUNT_TOKEN = "{install count}"
+
+    locked_summary = blocks.CharBlock(
+        required=False,
+        label="Message if no badge is unlocked",
+        help_text=(
+            "Optional line shown above the badges while no badge has been unlocked yet. Once a "
+            "badge is unlocked, that badge's own message replaces it. Use {install count} where "
+            "the number of successful installs should go. Leave blank to show no message."
+        ),
+    )
     badges = blocks.ListBlock(BadgeBlock(), min_num=1, label="Badges")
 
     class Meta:
@@ -1378,9 +1409,46 @@ class ImpactDashBlock(blocks.StructBlock):
         """
         context = super().get_context(value, parent_context=parent_context)
         install_count = self._coerce_count((parent_context or {}).get("install_count"))
+        badges = [self._badge_context(badge, install_count) for badge in value.get("badges") or []]
         context["install_count"] = install_count
-        context["badges"] = [self._badge_context(badge, install_count) for badge in value.get("badges") or []]
+        context["badges"] = badges
+        context["summary"] = self._resolve_summary(self._summary_source(value, badges), install_count)
         return context
+
+    @staticmethod
+    def _summary_source(value, badges) -> str:
+        """The message to show above the badges, before token substitution.
+
+        The furthest milestone reached is the interesting one, so the achieved
+        badge with the largest number wins -- picked by number rather than by
+        position, because the editor's list is not guaranteed to be sorted. max()
+        keeps the first of equal numbers, so duplicate thresholds resolve to the
+        one the editor listed first.
+
+        With nothing unlocked there is no badge message to show, so the
+        dashboard's own locked_summary stands in. A badge whose message is blank
+        shows nothing rather than falling back to locked_summary, which would
+        claim no badge had been earned.
+        """
+        achieved = [badge for badge in badges if badge["is_achieved"]]
+        if not achieved:
+            return value.get("locked_summary") or ""
+
+        return max(achieved, key=lambda badge: badge["number"])["message"]
+
+    @classmethod
+    def _resolve_summary(cls, raw, install_count: int) -> str:
+        """Substitute the editor's {install count} token with the resolved count.
+
+        A literal replace rather than str.format, so any other braces the editor
+        typed pass through untouched instead of raising KeyError or ValueError and
+        taking down the render. A message that never mentions the count is a legitimate thing to write.
+        """
+        summary = (raw or "").strip()
+        if not summary:
+            return ""
+
+        return summary.replace(cls.INSTALL_COUNT_TOKEN, str(install_count))
 
     @staticmethod
     def _coerce_count(raw) -> int:
@@ -1404,6 +1472,9 @@ class ImpactDashBlock(blocks.StructBlock):
             "label": singular if number == 1 else plural,
             "badge_name": (badge.get("badge_name") or "").strip(),
             "is_achieved": install_count >= number,
+            # Read by _summary_source, not by the badge itself: only the highest
+            # achieved badge's message is rendered, above the badge array.
+            "message": (badge.get("message") or "").strip(),
         }
 
 

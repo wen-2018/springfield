@@ -10,11 +10,16 @@
  the singular or plural label. install_count is absent on every other page type,
  in which case every badge is locked.
 
+ summary is the one optional line above the badges, already picked by progress --
+ the message of the furthest badge unlocked, or the dashboard's locked_summary
+ while none is -- and already carrying the install count in place of its
+ {install count} token. It is "" when whichever one applies was left blank.
+
  Each prop value must be exactly "{{ expr }}" with no surrounding text, so that
  includecontents passes the real Python bool/int rather than a rendered string.
 #}
 
-<include:impact-dash>
+<include:impact-dash summary="{{ summary }}">
   <content:badges>
     {% for badge in badges %}
       <include:badge
