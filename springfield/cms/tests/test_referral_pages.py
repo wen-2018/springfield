@@ -5,13 +5,14 @@
 from urllib.parse import parse_qs
 
 from django.db import DatabaseError
-from django.http import Http404
+from django.http import Http404, HttpResponseNotFound
 
 import pytest
 from bs4 import BeautifulSoup
 from wagtail.models import Site
 
 from springfield.cms.blocks import TabBlock
+from springfield.cms.middleware import CMSLocaleFallbackMiddleware
 from springfield.cms.tests.factories import ReferralGetFirefoxPageFactory, ReferralHubPageFactory
 from springfield.firefox.referral.models import FirefoxReferralData
 
@@ -398,3 +399,28 @@ def test_get_firefox_page_still_rejects_malformed_codes_when_database_errors(mon
     response = page.serve(rf.get("/get-firefox/?invitation=nope"))
 
     assert response.status_code == 302
+
+
+def test_hub_page_404_is_exempt_from_locale_fallback_redirection(rf):
+    """Regression: /en-US/invite/ with no ref_key must not redirect-loop.
+
+    CMSLocaleFallbackMiddleware turns a 404 into a redirect when a live page
+    exists at the same path in an acceptable locale. For a page that 404s its own
+    request that page is itself, so without the exemption the middleware
+    redirects to /en-US/invite/ forever (ERR_TOO_MANY_REDIRECTS).
+    """
+    site = Site.objects.get(is_default_site=True)
+    hub_page = ReferralHubPageFactory(parent=site.root_page)
+
+    def get_response(request):
+        try:
+            return hub_page.serve(request)
+        except Http404:
+            return HttpResponseNotFound("not found")
+
+    for query in ["", "?ref_key=", "?ref_key=nope"]:
+        request = rf.get(f"/en-US/invite/{query}")
+        response = CMSLocaleFallbackMiddleware(get_response)(request)
+
+        assert response.status_code == 404, query
+        assert "Location" not in response, query

@@ -87,6 +87,7 @@ from springfield.cms.blocks import (
     validate_animation_url,
 )
 from springfield.cms.fields import StreamField
+from springfield.cms.middleware import mark_locale_fallback_exempt
 from springfield.cms.models.locale import SpringfieldLocale
 from springfield.cms.rich_text import RichTextBlock, RichTextField
 from springfield.firefox.referral import invite_codes
@@ -2507,6 +2508,9 @@ class ReferralHubPage(AbstractSpringfieldCMSPage):
         by this and still renders with an empty invite URL.
         """
         if not invite_codes.is_well_formed(request.GET.get("ref_key")):
+            # Without this, CMSLocaleFallbackMiddleware would see the 404, find
+            # this very page live at the same path, and redirect to it forever.
+            mark_locale_fallback_exempt(request)
             raise Http404("Referral Hub URL is missing a well-formed ref_key")
 
         response = super().serve(request, *args, **kwargs)
