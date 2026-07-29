@@ -4,25 +4,16 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-/*
- * Optional editor-written line above the badges, already carrying the install
- * count. Centered to match the badges' own text-align.
- */
 .fl-impact-dash-summary {
     font-size: var(--token-font-size-lg);
     margin: var(--token-layout-xs) 0 0;
     text-align: center;
 }
 
-/*
- * The impact dashboard owns the responsive layout of its badge array: a
- * wrapping two-column grid on small screens, one row from md up. There are no
- * editor-facing layout options by design.
- */
 .fl-impact-dash {
     display: grid;
     gap: var(--token-spacing-lg);
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
     list-style: none;
     margin: var(--token-layout-xs) auto 0;
     padding: 0;
