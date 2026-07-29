@@ -14,10 +14,11 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
-from django.db import models
+from django.db import DatabaseError, models
 from django.db.models import Count
 from django.db.models.expressions import F
 from django.forms.widgets import CheckboxSelectMultiple
+from django.http import Http404
 from django.shortcuts import redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -88,6 +89,8 @@ from springfield.cms.blocks import (
 from springfield.cms.fields import StreamField
 from springfield.cms.models.locale import SpringfieldLocale
 from springfield.cms.rich_text import RichTextBlock, RichTextField
+from springfield.firefox.referral import invite_codes
+from springfield.firefox.referral.models import FirefoxReferralData
 
 from .base import AbstractSpringfieldCMSPage, PromotedPageMixin
 
@@ -2431,22 +2434,27 @@ class ReferralHubPage(AbstractSpringfieldCMSPage):
         verbose_name = "Referral Program: Referral Hub Page"
 
     def _referral_id_to_invite_code(self, referral_id: str) -> str:
-        # placeholder/dummy invite-code-generation for now
-        return referral_id[::-1].replace("TSET", "FAKE")
+        # Both directions of the mapping live in invite_codes so the hub page and
+        # the invitee page cannot drift apart.
+        return invite_codes.referral_id_to_invite_code(referral_id)
 
     def get_context(self, request, *args, **kwargs):
         """
-        Adds an invite_url to the context using the referral-hub ID
-        ("ref_key") in the URL that opens this Referral Hub page.
-        If ref_key is missing, invite_url is empty.
+        Adds an invite_url and an install_count to the context using the
+        referral-hub ID ("ref_key") in the URL that opens this Referral Hub page.
+        If ref_key is missing, invite_url is empty and install_count is 0.
 
         The invite_url is the one that can be copied and sent to friends
         and can be turned into a QR code as needed, etc.
+
+        install_count is the number of installs credited to this ref_key. It
+        drives the achieved/locked state of the impact dashboard's badges.
         """
 
         context = super().get_context(request, *args, **kwargs)
 
-        if referral_id := request.GET.get("ref_key"):
+        referral_id = request.GET.get("ref_key") or ""
+        if referral_id:
             invite_code = self._referral_id_to_invite_code(referral_id)
             params = urlencode({"invitation": invite_code})
             context["invite_url"] = request.build_absolute_uri(f"/get-firefox/?{params}")
@@ -2455,7 +2463,55 @@ class ReferralHubPage(AbstractSpringfieldCMSPage):
             # this case
             context["invite_url"] = ""
 
+        context["install_count"] = self._get_install_count(referral_id)
+
         return context
+
+    def _get_install_count(self, referral_id: str) -> int:
+        """Installs credited to this ref_key, or 0 if it cannot be determined.
+
+        Returns 0 rather than raising for every failure mode -- no ref_key, an
+        unknown ref_key, or the referral table being unavailable -- because the
+        impact dashboard is one optional part of this page and must not be able
+        to fail the whole hub render.
+
+        Note this collapses "we don't know" and "you genuinely have 0 installs"
+        into the same value. If the design ever needs to distinguish them (e.g.
+        "we couldn't load your progress"), this should return None instead.
+        """
+        # referral_id is stored in a bounded CharField, so anything longer cannot
+        # match a row. Skip the pointless round trip rather than query for it.
+        max_length = FirefoxReferralData._meta.get_field("referral_id").max_length
+        if not referral_id or len(referral_id) > max_length:
+            return 0
+
+        try:
+            # values_list().first() is a single SELECT ... LIMIT 1 with no model
+            # instantiation, and yields None for a missing row.
+            count = FirefoxReferralData.objects.filter(referral_id=referral_id).values_list("install_count", flat=True).first()
+        except DatabaseError as exc:
+            with new_scope() as scope:
+                scope.set_extra("exception", str(exc))
+                capture_message("Failed to read FirefoxReferralData install count", level="error")
+            return 0
+
+        return count or 0
+
+    def serve(self, request, *args, **kwargs):
+        """Require a well-formed ref_key, and never cache the result.
+
+        The hub is meaningless without a referral ID -- there is no invite link to
+        copy and no progress to show -- so a URL missing that part is treated as
+        not found rather than served empty. Wagtail's serve_preview builds its own
+        TemplateResponse instead of calling serve(), so CMS preview is unaffected
+        by this and still renders with an empty invite URL.
+        """
+        if not invite_codes.is_well_formed(request.GET.get("ref_key")):
+            raise Http404("Referral Hub URL is missing a well-formed ref_key")
+
+        response = super().serve(request, *args, **kwargs)
+        add_never_cache_headers(response)
+        return response
 
 
 class ReferralGetFirefoxPage(AbstractSpringfieldCMSPage):
@@ -2463,6 +2519,10 @@ class ReferralGetFirefoxPage(AbstractSpringfieldCMSPage):
 
     Will use custom, privacy-respecting attribution so we can tally up
     how many people install via the invite code used to open this page.
+
+    Reached via /get-firefox/?invitation=<code>. A visitor arriving without a
+    usable invitation is not an invitee, so they are sent to the ordinary
+    localized home page instead of seeing a referral landing page.
     """
 
     parent_page_types = ["cms.HomePage"]
@@ -2470,3 +2530,27 @@ class ReferralGetFirefoxPage(AbstractSpringfieldCMSPage):
 
     class Meta:
         verbose_name = "Referral Program: Invitee / Get Firefox Page"
+
+    def _is_valid_invite_code(self, invite_code) -> bool:
+        """True if the code looks right and names a referral we know about."""
+        if not invite_codes.is_well_formed(invite_code):
+            return False
+
+        referral_id = invite_codes.invite_code_to_referral_id(invite_code)
+        try:
+            return FirefoxReferralData.objects.filter(referral_id=referral_id).exists()
+        except DatabaseError as exc:
+            # Fail open. If the referral table is unavailable, sending every
+            # invitee away from a working download page is a far worse outcome
+            # than admitting some traffic we could not verify.
+            with new_scope() as scope:
+                scope.set_extra("exception", str(exc))
+                capture_message("Failed to verify referral invite code; allowing through", level="error")
+            return True
+
+    def serve(self, request, *args, **kwargs):
+        if not self._is_valid_invite_code(request.GET.get("invitation")):
+            # Locale-aware so a visitor is not forced into English.
+            return redirect(f"/{l10n_utils.get_locale(request)}/")
+
+        return super().serve(request, *args, **kwargs)

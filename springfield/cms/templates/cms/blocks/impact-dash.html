@@ -1,0 +1,43 @@
+{#
+ This Source Code Form is subject to the terms of the Mozilla Public
+ License, v. 2.0. If a copy of the MPL was not distributed with this
+ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#}
+
+{#
+ badges comes from ImpactDashBlock.get_context, which has already resolved each
+ badge against install_count from the page context (ReferralHubPage) and picked
+ the singular or plural label. install_count is absent on every other page type,
+ in which case every badge is locked.
+
+ Each prop value must be exactly "{{ expr }}" with no surrounding text, so that
+ includecontents passes the real Python bool/int rather than a rendered string.
+#}
+
+<include:impact-dash>
+  <content:badges>
+    {% for badge in badges %}
+      <include:badge
+        number="{{ badge.number }}"
+        label="{{ badge.label }}"
+        badge_name="{{ badge.badge_name }}"
+        is_achieved="{{ badge.is_achieved }}"
+      >
+        {% if badge.image %}
+          <content:media>
+            {{ srcset_image(
+                badge.image,
+                "width-{80,160,240}",
+                sizes="80px",
+                width=badge.image.width,
+                height=badge.image.height,
+                loading="lazy",
+                alt="",
+                class="fl-badge-image",
+            ) }}
+          </content:media>
+        {% endif %}
+      </include:badge>
+    {% endfor %}
+  </content:badges>
+</include:impact-dash>

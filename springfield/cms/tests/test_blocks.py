@@ -35,6 +35,7 @@ from springfield.cms.blocks import (
     FXAccountButtonBlock,
     IconChoiceBlock,
     IconListItemValue,
+    ImpactDashBlock,
     QRCodeModalButtonBlock,
     SectionBlock,
     SetAsDefaultButtonBlock,
@@ -4373,10 +4374,21 @@ def _tab_value(referral_controls=True, **overrides):
     return TabBlock().to_python(raw)
 
 
-def _render_tab(referral_controls=True, invite_url=INVITE_URL, **overrides):
+_UNSET = object()
+
+
+def _render_tab(referral_controls=True, invite_url=INVITE_URL, install_count=_UNSET, **overrides):
+    """Render a TabBlock.
+
+    ``install_count`` defaults to being absent from the context entirely, which
+    is the situation on every page type other than the Referral Hub.
+    """
     block = TabBlock()
     value = _tab_value(referral_controls=referral_controls, **overrides)
-    return block.render(value, context={"invite_url": invite_url, "section_id": "hub", "tab_index": 1})
+    context = {"invite_url": invite_url, "section_id": "hub", "tab_index": 1}
+    if install_count is not _UNSET:
+        context["install_count"] = install_count
+    return block.render(value, context=context)
 
 
 def test_tab_block_renders_referral_controls_with_all_labels():
@@ -4547,3 +4559,230 @@ def test_tab_block_renders_referral_controls_between_description_and_note():
             order.append("note")
 
     assert order == ["description", "controls", "note"]
+
+
+# Impact dashboard / badges (inside TabBlock)
+
+
+def _badge(number, singular="person", plural="people", badge_name="Connector"):
+    return {
+        "number": number,
+        "singular_label": singular,
+        "plural_label": plural,
+        "badge_name": badge_name,
+    }
+
+
+def _impact_dash(badges):
+    """A raw impact_dash stream value holding one dashboard with these badges."""
+    return [{"type": "impact_dash", "value": {"badges": badges}}]
+
+
+def _render_impact_dash(numbers=(1, 5, 25), install_count=_UNSET, badges=None):
+    html = _render_tab(
+        referral_controls=False,
+        install_count=install_count,
+        impact_dash=_impact_dash(badges if badges is not None else [_badge(n) for n in numbers]),
+    )
+    return BeautifulSoup(html, "html.parser")
+
+
+def _badge_elements(soup):
+    return soup.select("ul.fl-impact-dash li.fl-badge")
+
+
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [
+        (None, 0),
+        ("", 0),
+        ("abc", 0),
+        ([], 0),
+        (-5, 0),
+        (0, 0),
+        (7, 7),
+        ("7", 7),
+        (7.9, 7),
+    ],
+)
+def test_impact_dash_coerce_count(raw, expected):
+    """A missing or junk context value must degrade to 0, never raise."""
+    assert ImpactDashBlock._coerce_count(raw) == expected
+
+
+@pytest.mark.parametrize(
+    ("install_count", "number", "is_achieved"),
+    [
+        (0, 1, False),
+        (4, 5, False),
+        (5, 5, True),  # the boundary: >= not >
+        (6, 5, True),
+        (342, 25, True),
+    ],
+)
+def test_impact_dash_badge_achieved_at_threshold_boundary(install_count, number, is_achieved):
+    resolved = ImpactDashBlock._badge_context(_badge(number), install_count)
+
+    assert resolved["is_achieved"] is is_achieved
+
+
+@pytest.mark.parametrize(
+    ("number", "expected"),
+    [
+        (0, "people"),  # legacy data only; min_value=1 blocks new entries
+        (1, "person"),
+        (2, "people"),
+        (342, "people"),
+    ],
+)
+def test_impact_dash_label_is_singular_only_for_exactly_one(number, expected):
+    """The label agrees with the badge's own number, not the install count."""
+    assert ImpactDashBlock._badge_context(_badge(number), install_count=1)["label"] == expected
+
+
+def test_impact_dash_label_falls_back_to_singular_when_plural_blank():
+    """Only reachable via legacy JSON, but must never render a bare number."""
+    resolved = ImpactDashBlock._badge_context(_badge(5, plural="  "), install_count=0)
+
+    assert resolved["label"] == "person"
+
+
+def test_tab_block_renders_one_badge_per_entry_in_order():
+    badges = _badge_elements(_render_impact_dash(numbers=(1, 5, 25), install_count=0))
+
+    assert len(badges) == 3
+    assert [b.find("span", class_="fl-badge-number").get_text(strip=True) for b in badges] == ["1", "5", "25"]
+
+
+def test_tab_block_renders_badge_number_and_label():
+    badges = _badge_elements(_render_impact_dash(numbers=(1, 5), install_count=0))
+
+    assert badges[0].find("span", class_="fl-badge-label").get_text(strip=True) == "person"
+    assert badges[1].find("span", class_="fl-badge-label").get_text(strip=True) == "people"
+
+
+def test_tab_block_marks_only_achieved_badges():
+    """Guards the includecontents bool-prop footgun.
+
+    If is_achieved reached the component as the string "False" it would be
+    truthy and every badge would render achieved.
+    """
+    badges = _badge_elements(_render_impact_dash(numbers=(1, 5, 25), install_count=5))
+
+    assert [b.get("data-achieved") for b in badges] == ["true", "true", "false"]
+    assert ["is-achieved" in b["class"] for b in badges] == [True, True, False]
+
+
+def test_tab_block_impact_dash_locked_when_install_count_absent_from_context():
+    """TabBlock is reachable from MediaBlock on pages that never set the count."""
+    soup = _render_impact_dash(numbers=(1, 5), install_count=_UNSET)
+
+    assert len(_badge_elements(soup)) == 2
+    assert soup.select("li.fl-badge.is-achieved") == []
+
+
+@pytest.mark.parametrize("install_count", [None, "", "abc"])
+def test_tab_block_impact_dash_locked_when_install_count_not_numeric(install_count):
+    soup = _render_impact_dash(numbers=(1, 5), install_count=install_count)
+
+    assert soup.select("li.fl-badge.is-achieved") == []
+
+
+def test_tab_block_omits_impact_dash_when_not_added():
+    soup = BeautifulSoup(_render_tab(referral_controls=False, impact_dash=[]), "html.parser")
+
+    assert soup.find("ul", class_="fl-impact-dash") is None
+
+
+def test_tab_block_renders_when_impact_dash_key_absent_from_stored_json():
+    """Tabs saved before impact_dash existed have no such key at all."""
+    block = TabBlock()
+    value = block.to_python({"tab_name": "Legacy tab", "description": "<p>Legacy description</p>"})
+
+    assert len(value["impact_dash"]) == 0
+
+    html = block.render(value, context={"section_id": "hub", "tab_index": 1})
+    soup = BeautifulSoup(html, "html.parser")
+
+    assert soup.find("ul", class_="fl-impact-dash") is None
+    assert soup.find("p", class_="fl-tab-description").get_text(strip=True) == "Legacy description"
+
+
+def test_tab_block_renders_badge_without_image():
+    soup = _render_impact_dash(numbers=(5,), install_count=0)
+
+    assert _badge_elements(soup)[0].find("div", class_="fl-badge-media") is None
+
+
+def test_tab_block_renders_impact_dash_between_referral_controls_and_note():
+    html = _render_tab(install_count=5, impact_dash=_impact_dash([_badge(1)]))
+    panel = BeautifulSoup(html, "html.parser").find("div", class_="fl-tab")
+
+    order = []
+    for child in panel.find_all(["p", "small", "div", "ul"], recursive=True):
+        classes = child.get("class") or []
+        if "fl-tab-description" in classes:
+            order.append("description")
+        elif "fl-referral-controls" in classes:
+            order.append("controls")
+        elif "fl-impact-dash" in classes:
+            order.append("impact_dash")
+        elif "fl-tab-note" in classes:
+            order.append("note")
+
+    assert order == ["description", "controls", "impact_dash", "note"]
+
+
+@pytest.mark.django_db
+def test_tab_block_renders_badge_image(placeholder_images):
+    image = placeholder_images[0]
+    badges = [{"number": 5, "singular_label": "person", "plural_label": "people", "image": image.pk}]
+    soup = _render_impact_dash(install_count=0, badges=badges)
+
+    media = _badge_elements(soup)[0].find("div", class_="fl-badge-media")
+    assert media is not None
+    # Decorative: the number and label already carry the meaning.
+    assert media["aria-hidden"] == "true"
+
+    img = media.find("img", class_="fl-badge-image")
+    assert img["alt"] == ""
+    assert img["loading"] == "lazy"
+    assert "srcset" in img.attrs
+
+
+def test_tab_block_renders_badge_name_below_the_number_and_label():
+    badges = _badge_elements(_render_impact_dash(numbers=(5,), install_count=0))
+
+    name = badges[0].find("p", class_="fl-badge-name")
+    assert name.get_text(strip=True) == "Connector"
+
+    # The name must follow the number/label pair, not precede it.
+    children = [el for el in badges[0].find_all(["p", "div"], recursive=False)]
+    classes = [c for el in children for c in (el.get("class") or [])]
+    assert classes.index("fl-badge-value") < classes.index("fl-badge-name")
+
+
+def test_tab_block_renders_distinct_badge_name_per_badge():
+    badges = _badge_elements(
+        _render_impact_dash(
+            install_count=0,
+            badges=[_badge(1, badge_name="Connector"), _badge(5, badge_name="Supporter")],
+        )
+    )
+
+    assert [b.find("p", class_="fl-badge-name").get_text(strip=True) for b in badges] == ["Connector", "Supporter"]
+
+
+def test_tab_block_omits_badge_name_element_when_blank():
+    """Blank is only reachable via legacy JSON, but must not leave an empty tag."""
+    badges = _badge_elements(_render_impact_dash(install_count=0, badges=[_badge(5, badge_name="   ")]))
+
+    assert badges[0].find("p", class_="fl-badge-name") is None
+    # The rest of the badge still renders.
+    assert badges[0].find("span", class_="fl-badge-number").get_text(strip=True) == "5"
+
+
+def test_impact_dash_badge_context_strips_the_badge_name():
+    resolved = ImpactDashBlock._badge_context(_badge(5, badge_name="  Supporter  "), install_count=0)
+
+    assert resolved["badge_name"] == "Supporter"

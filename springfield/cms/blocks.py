@@ -1308,12 +1308,126 @@ class TabReferralControlsBlock(blocks.StreamBlock):
         label = "Referral controls"
 
 
+class BadgeBlock(blocks.StructBlock):
+    """One milestone marker in an impact dashboard.
+
+    ``number`` does double duty: it is the threshold compared against the
+    referrer's install count, and the number rendered on the badge. There is
+    deliberately no separate "display" field to drift out of sync with it.
+
+    The singular/plural pair encodes the English "1 vs. everything else" rule and
+    agrees with this badge's own ``number``, not the install count -- otherwise a
+    badge reading 5 would render "5 person" whenever the referrer had exactly one
+    install. Locales with three or more plural categories cannot be expressed;
+    that is a repo-wide constraint, as there is no ngettext usage and no Fluent
+    plural selector anywhere in the codebase.
+    """
+
+    image = ImageChooserBlock(required=False, help_text="Badge artwork. Optional.")
+    number = blocks.IntegerBlock(
+        min_value=1,
+        help_text=(
+            "The milestone this badge marks, and the number shown on it. The badge is "
+            "marked achieved once the referrer's install count reaches this number."
+        ),
+    )
+    singular_label = blocks.CharBlock(
+        default="person",
+        help_text='Word after the number when the number is exactly 1, e.g. "person" in "1 person".',
+    )
+    plural_label = blocks.CharBlock(
+        default="people",
+        help_text='Word after the number for any other number, e.g. "people" in "5 people".',
+    )
+    badge_name = blocks.CharBlock(
+        default="badge name",
+        help_text='Badge name, like "Connector", "Supporter", etc.',
+    )
+
+    class Meta:
+        label = "Badge"
+        label_format = "{badge_name} - {number}"
+        # No template: rendered by the loop in cms/blocks/impact-dash.html, the
+        # same way RoadmapItemBlock is rendered by roadmap-list-section.html.
+
+
+class ImpactDashBlock(blocks.StructBlock):
+    """Badge array showing a referrer's progress against invite milestones.
+
+    Only lights up on the Referral Hub page, which is the only page that puts
+    ``install_count`` on the template context. TabBlock is reachable from
+    MediaBlock on many other page models, where every badge stays locked.
+    """
+
+    badges = blocks.ListBlock(BadgeBlock(), min_num=1, label="Badges")
+
+    class Meta:
+        icon = "list-ul"
+        label = "Impact dashboard"
+        label_format = "Impact dashboard"
+        template = "cms/blocks/impact-dash.html"
+
+    def get_context(self, value, parent_context=None):
+        """Resolve each badge against the referrer's install count.
+
+        The count lives on the page context rather than in the block value, so
+        this is the only layer that can see both. Doing the comparison and the
+        singular/plural choice here rather than in Jinja keeps the coercion of a
+        missing or non-numeric count in one place -- comparing against an
+        undefined in a template would raise instead.
+        """
+        context = super().get_context(value, parent_context=parent_context)
+        install_count = self._coerce_count((parent_context or {}).get("install_count"))
+        context["install_count"] = install_count
+        context["badges"] = [self._badge_context(badge, install_count) for badge in value.get("badges") or []]
+        return context
+
+    @staticmethod
+    def _coerce_count(raw) -> int:
+        """Never let a missing, empty or non-numeric context value raise."""
+        try:
+            return max(int(raw), 0)
+        except (TypeError, ValueError):
+            return 0
+
+    @staticmethod
+    def _badge_context(badge, install_count: int) -> dict:
+        number = badge.get("number") or 0
+        singular = (badge.get("singular_label") or "").strip()
+        # Only reachable via legacy/imported JSON, as both fields are required
+        # with defaults. Falling back means a badge can never render a bare
+        # number with no word after it.
+        plural = (badge.get("plural_label") or "").strip() or singular
+        return {
+            "image": badge.get("image"),
+            "number": number,
+            "label": singular if number == 1 else plural,
+            "badge_name": (badge.get("badge_name") or "").strip(),
+            "is_achieved": install_count >= number,
+        }
+
+
+class TabImpactDashBlock(blocks.StreamBlock):
+    """Wrapper making ImpactDashBlock a genuinely optional tab field.
+
+    Same reason as TabReferralControlsBlock: a nested StructBlock's StructValue
+    is an always-populated OrderedDict, so it is always truthy and the template
+    could never tell "not added" from "added".
+    """
+
+    impact_dash = ImpactDashBlock()
+
+    class Meta:
+        label = "Impact dashboard"
+
+
 class TabBlock(blocks.StructBlock):
     tab_name = blocks.CharBlock(label="Tab name")
     heading = RichTextBlock(features=HEADING_TEXT_FEATURES, required=False)
     image = ImageChooserBlock(required=False)
     description = RichTextBlock(features=EXPANDED_TEXT_FEATURES, required=False)
     referral_controls = TabReferralControlsBlock(max_num=1, min_num=0, required=False)
+    impact_dash = TabImpactDashBlock(max_num=1, min_num=0, required=False)
     note = RichTextBlock(features=HEADING_TEXT_FEATURES, required=False)
 
     class Meta:

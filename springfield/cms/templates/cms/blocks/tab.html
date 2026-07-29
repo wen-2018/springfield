@@ -23,6 +23,7 @@
     <p class="fl-tab-description">{{ value.description|richtext }}</p>
   {% endif %}
   {% include_block value.referral_controls %}
+  {% include_block value.impact_dash %}
   {% if value.note %}
     <small class="fl-tab-note">{{ value.note|richtext }}</small>
   {% endif %}

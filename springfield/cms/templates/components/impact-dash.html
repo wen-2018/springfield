@@ -1,0 +1,18 @@
+{#
+ This Source Code Form is subject to the terms of the Mozilla Public
+ License, v. 2.0. If a copy of the MPL was not distributed with this
+ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#}
+
+{#
+ Container only: it owns the list element and the responsive layout, and the
+ caller supplies the badge items. Same split as roadmap-list-section/roadmap-item.
+#}
+
+{# props #}
+
+{% if contents.badges %}
+  <ul class="fl-impact-dash">
+    {{ contents.badges }}
+  </ul>
+{% endif %}
