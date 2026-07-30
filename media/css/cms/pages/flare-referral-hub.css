@@ -18,6 +18,11 @@
         padding-block-end: 0;
     }
 
+    .fl-referral-hub-body .fl-showcase-description {
+        margin: auto;
+        max-inline-size: 566px;
+    }
+
     .fl-referral-hub-body .fl-showcase-image:has(.fl-media-tabs) {
         inline-size: 100%;
         max-inline-size: var(--token-width-desktop-content-lg);
