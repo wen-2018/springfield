@@ -27,7 +27,7 @@
         background: var(--theme-tabs-nav-background);
         border: none;
         font-weight: var(--token-font-weight-bold);
-        padding: var(--token-spacing-md) var(--token-spacing-lg);
+        min-inline-size: 122px;
     }
 
     [role='tab'],

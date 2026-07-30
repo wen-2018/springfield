@@ -6,6 +6,10 @@
 
 {% extends "cms/includes/referral-context-dump.html" %}
 
+{% block page_css %}{{ css_bundle('flare-referral-hub') }}{% endblock %}
+
+{% block body_class %}fl-referral-hub-body{% endblock %}
+
 {% block flare_header %}
   {% include 'cms/includes/referral-hub-custom-header.html' %}
 {% endblock %}

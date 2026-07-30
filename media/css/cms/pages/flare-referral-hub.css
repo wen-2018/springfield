@@ -1,0 +1,83 @@
+/*
+* This Source Code Form is subject to the terms of the Mozilla Public
+* License, v. 2.0. If a copy of the MPL was not distributed with this
+* file, You can obtain one at https://mozilla.org/MPL/2.0/.
+*/
+
+/* Required for postcss-custom-media to resolve @custom-media variables in standalone bundles */
+@import 'variables/flare-media-query-tokens.css';
+
+@layer page {
+    /* ================================================
+       Hero (upper band)
+
+       The hub's upper band holds a single showcase whose media slot is a set of
+       tabs carrying the referral controls and the impact dashboard.
+       ================================================ */
+    .fl-referral-hub-body .fl-split-page-upper {
+        padding-block-end: 0;
+    }
+
+    .fl-referral-hub-body .fl-showcase-image:has(.fl-media-tabs) {
+        inline-size: 100%;
+        max-inline-size: var(--token-width-desktop-content-lg);
+    }
+
+    .fl-referral-hub-body .fl-media-tabs {
+        inline-size: 100%;
+    }
+
+    /*
+     * Copy button, share links, QR block and badge row all sit in the same tab
+     * panel. Holding them to the reading measure keeps the panel from spreading
+     * them apart on wide screens.
+     */
+    .fl-referral-hub-body .fl-referral-controls,
+    .fl-referral-hub-body .fl-impact-dash,
+    .fl-referral-hub-body .fl-impact-dash-summary {
+        max-inline-size: var(--token-width-desktop-content);
+    }
+
+    .fl-referral-hub-body .fl-impact-dash-summary {
+        margin-inline: auto;
+    }
+
+    /* ================================================
+       Lower band
+       ================================================ */
+    .fl-referral-hub-body .fl-split-page-lower > :last-child {
+        padding-block-end: 0;
+    }
+
+    /* ================================================
+       Extra band (pre-footer)
+
+       Rendered outside .fl-main, directly on the dark body background, with the
+       dark theme forced by the template. Only this page uses
+       .fl-split-page-extra, so it is styled here rather than in the template
+       layer.
+       ================================================ */
+
+    .fl-referral-hub-body .fl-split-page-extra {
+        color: var(--fl-theme-color-text);
+        margin: 0 auto;
+        padding-block: var(--fl-section-v-padding);
+        position: relative;
+    }
+
+    .fl-referral-hub-body .fl-split-page-extra > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .fl-referral-hub-body .fl-split-page-extra .fl-showcase {
+        margin-inline: auto;
+        max-inline-size: var(--token-width-desktop-content-lg);
+    }
+
+    @media (--viewport-md-up) {
+        .fl-referral-hub-body {
+            --section-border-radius: var(--token-border-radius-xl);
+        }
+    }
+}

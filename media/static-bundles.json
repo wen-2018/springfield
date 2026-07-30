@@ -404,6 +404,12 @@
     },
     {
       "files": [
+        "css/cms/pages/flare-referral-hub.css"
+      ],
+      "name": "flare-referral-hub"
+    },
+    {
+      "files": [
         "css/cms/pages/flare-channels.css",
         "css/cms/pages/flare-release-notes.css"
       ],
