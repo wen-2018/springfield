@@ -19,8 +19,12 @@
         gap: var(--token-spacing-xs);
         inline-size: fit-content;
         justify-content: center;
-        margin: 0 auto var(--token-layout-xs);
+        margin: 0 auto;
         padding: var(--token-spacing-xs);
+    }
+
+    .fl-tabs-panels {
+        padding: var(--token-layout-xs) 0 0;
     }
 
     button[role='tab'] {

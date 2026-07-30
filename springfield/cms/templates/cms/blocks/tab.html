@@ -5,9 +5,6 @@
 #}
 
 <div id="fl-tab-panel-{{ section_id }}-{{ tab_index }}" role="tabpanel" aria-labelledby="fl-tab-{{ section_id }}-{{ tab_index }}" class="fl-tab">
-  {% if value.heading %}
-    <h2 class="fl-heading-size-2">{{ value.heading|richtext|remove_p_tag }}</h2>
-  {% endif %}
   {% if value.image %}
     {{ srcset_image(
         value.image,
@@ -19,12 +16,17 @@
         class="fl-tab-image",
     ) }}
   {% endif %}
+  {% if value.heading %}
+    <h2 class="fl-tab-heading fl-heading-xs">{{ value.heading|richtext|remove_p_tag }}</h2>
+  {% endif %}
   {% if value.description %}
     <p class="fl-tab-description">{{ value.description|richtext|remove_p_tag }}</p>
   {% endif %}
   {% include_block value.referral_controls %}
   {% include_block value.impact_dash %}
   {% if value.note %}
+  <div class="fl-tab-note-wrapper">
     <small class="fl-tab-note">{{ value.note|richtext }}</small>
+  </div>
   {% endif %}
 </div>

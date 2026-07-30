@@ -32,6 +32,15 @@
         inline-size: 100%;
     }
 
+    .fl-tabs {
+        padding: var(--token-layout-2xs) 0 0;
+    }
+
+    .fl-referral-hub-body .fl-tab-image {
+        margin-block-end: var(--token-spacing-xl);
+        max-inline-size: 110px;
+    }
+
     /*
      * Copy button, share links, QR block and badge row all sit in the same tab
      * panel. Holding them to the reading measure keeps the panel from spreading
@@ -45,6 +54,17 @@
 
     .fl-referral-hub-body .fl-impact-dash-summary {
         margin-inline: auto;
+    }
+
+    .fl-referral-hub-body .fl-tab-note-wrapper {
+        border-block-start: 1px solid var(--token-color-medium-purple);
+        color: #b89cff;
+        display: block;
+        padding: var(--token-spacing-xl) var(--token-layout-xs);
+    }
+
+    .fl-referral-hub-body .fl-tab-note p {
+        margin-block-end: 0;
     }
 
     /* ================================================
