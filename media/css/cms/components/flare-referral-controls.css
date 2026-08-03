@@ -12,14 +12,8 @@
     margin: 0 auto;
 }
 
-.fl-referral-controls-share {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--token-spacing-md);
-    justify-content: center;
-    list-style: none;
-    margin: 0;
-    padding: 0;
+.fl-referral-controls-invite {
+    border-radius: var(--token-border-radius-xl);
 }
 
 .fl-referral-controls-qr {
