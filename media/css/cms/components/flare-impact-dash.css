@@ -5,8 +5,9 @@
  */
 
 .fl-impact-dash-summary {
-    font-size: var(--token-font-size-lg);
-    margin: var(--token-layout-xs) auto 0;
+    color: #b89cff;
+    font-size: var(--token-font-size-sm);
+    margin: var(--token-spacing-md) auto 0;
     text-align: center;
 }
 
@@ -19,34 +20,39 @@
     padding: 0;
 }
 
-/*
- * The list already owns the space above itself, so tighten it when a summary is
- * what it follows -- the two are one unit, not two stacked sections.
- */
 .fl-impact-dash-summary + .fl-impact-dash {
-    margin-block-start: var(--token-spacing-md);
+    margin-block: var(--token-spacing-xl);
+}
+
+@media (--viewport-sm-up) {
+    .fl-impact-dash-summary {
+        max-inline-size: 80%;
+    }
 }
 
 @media (--viewport-md-up) {
     .fl-impact-dash {
+        gap: 0;
         grid-auto-columns: 1fr;
         grid-auto-flow: column;
         grid-template-columns: none;
+        justify-content: center;
+    }
+
+    .fl-impact-dash-summary {
+        margin: var(--token-spacing-xl) auto 0;
+        max-inline-size: 60%;
     }
 }
 
-/*
- * Locked is the default state; .is-achieved is added by ImpactDashBlock once the
- * referrer's install count reaches the badge's number. Only the artwork is
- * dimmed: the number and label stay at full contrast in both states so the
- * distinction is carried by appearance alone.
- */
+/* badge styles */
 .fl-badge {
-    --badge-image-filter: grayscale(1);
-    --badge-image-opacity: 0.4;
+    --badge-image-filter: grayscale(0.2);
+    --badge-image-opacity: 0.6;
     display: flex;
-    flex-direction: column;
-    gap: var(--token-spacing-sm);
+    gap: var(--token-spacing-lg);
+    justify-content: flex-start;
+    padding-inline-start: calc((100% - 130px) / 2);
     text-align: center;
 }
 
@@ -55,37 +61,176 @@
     --badge-image-opacity: 1;
 }
 
-.fl-badge-media {
-    margin-inline: auto;
+.fl-badge.is-achieved .fl-badge-media {
+    background-clip: padding-box, border-box;
+    background-color: red;
+    background-image:
+        linear-gradient(#47177b, #210340),
+        linear-gradient(to bottom, #e752ff, #5327ff);
+    background-origin: border-box;
+    border: 2px solid transparent;
 }
+
+.fl-badge-media {
+    align-items: center;
+    block-size: 40px;
+    border: 1px solid #7543e3;
+    border-radius: 50%;
+    display: flex;
+    inline-size: 40px;
+    justify-content: center;
+    margin-inline: 0;
+    position: relative;
+}
+
+/* .fl-badge-media::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    height: 50%;
+    width: 1px;
+    background-color: #7543E3;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+.fl-badge.is-achieved .fl-badge-media::before {
+    width: 2px;
+    background-clip: padding-box, border-box;
+    background-color: red;
+    background-image:
+        linear-gradient(#47177b, #210340),
+        linear-gradient(to bottom, #5327ff, #e752ff);
+    background-origin: border-box;
+    border: 2px solid transparent;
+}
+
+.fl-badge:first-of-type .fl-badge-media::before,
+.fl-badge:last-of-type .fl-badge-media::after {
+    display: none;
+}
+
+.fl-badge-media::after {
+    content: "";
+    position: absolute;
+    bottom: -28px;
+    left: 50%;
+    height: 17px;
+    width: 1px;
+    background-color: #7543E3;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+.fl-badge.is-achieved .fl-badge-media::after {
+    width: 2px;
+    background-clip: padding-box, border-box;
+    background-color: red;
+    background-image:
+        linear-gradient(#47177b, #210340),
+        linear-gradient(to bottom, #5628fe, #e752ff, #602BFF);
+    background-origin: border-box;
+    border: 2px solid transparent;
+} */
 
 .fl-badge-image {
     block-size: auto;
     filter: var(--badge-image-filter);
-    inline-size: 80px;
+    inline-size: 24px;
+    margin-block-end: 0;
     max-inline-size: 100%;
     opacity: var(--badge-image-opacity);
 }
 
-.fl-badge-value {
+.fl-badge-description {
+    align-items: flex-start;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+}
+
+.fl-badge-value {
+    display: flex;
+    gap: 2px;
     margin: 0;
 }
 
-.fl-badge-number {
-    font-family: var(--token-font-family-mozilla-headline);
-    font-size: var(--token-font-size-xl);
-    font-weight: var(--token-font-weight-bold);
-    line-height: 1.2;
-}
-
+.fl-badge-number,
 .fl-badge-label {
-    font-size: var(--token-font-size-lg);
+    color: #b89cff;
+    font-size: var(--token-font-size-sm);
 }
 
 .fl-badge-name {
     font-family: var(--token-font-family-mozilla-headline);
-    font-weight: var(--token-font-weight-bold);
+    font-size: var(--token-font-size-sm);
+    font-weight: var(--token-font-weight-semibold);
     margin: var(--token-spacing-xs) 0 0;
+}
+
+@media (--viewport-sm-up) {
+    .fl-badge {
+        padding-inline-start: calc((100% - 160px) / 2);
+    }
+
+    .fl-badge.is-achieved .fl-badge-media {
+        border: 5px solid transparent;
+    }
+
+    .fl-badge-media {
+        block-size: 80px;
+        inline-size: 80px;
+    }
+
+    .fl-badge-image {
+        inline-size: 40px;
+    }
+
+    /* .fl-badge-media::before {
+        top: -12px;
+        left: 50%;
+        height: 15px;
+        width: 1px;
+    }
+
+    .fl-badge-media::after {
+        bottom: -31px;
+        left: 50%;
+        height: 17px;
+        width: 1px;
+    } */
+}
+
+@media (--viewport-md-up) {
+    .fl-badge {
+        align-items: center;
+        flex-direction: column;
+        justify-content: center;
+        margin-inline-start: 0;
+    }
+
+    .fl-badge-description {
+        align-items: center;
+    }
+
+    /* .fl-badge-media::before,
+    .fl-badge-media::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: -63%;
+        right: 100%;
+        height: 1px;
+        background-color: red;
+        transform: translateY(-50%);
+        z-index: 1;
+    }
+
+    .fl-badge-media::after {
+        left: 100%;
+        right: -63%;
+        height: 1px;
+        background-color: yellow;
+    } */
 }
