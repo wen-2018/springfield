@@ -108,6 +108,10 @@
         padding-block-start: 0;
     }
 
+    .fl-referral-hub-page .fl-banner-kit {
+        background-image: none;
+    }
+
     .fl-referral-hub-page .fl-split-page-lower > :last-child {
         padding-block-end: 0;
     }
@@ -150,6 +154,10 @@
 
         .fl-referral-hub-page .fl-showcase-media {
             padding-block-end: var(--token-layout-xs);
+        }
+
+        .fl-banner-kit-small {
+            --kit-img-size: 20% auto;
         }
     }
 }
