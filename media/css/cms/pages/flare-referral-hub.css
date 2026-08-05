@@ -100,6 +100,14 @@
     }
 
     /* Lower band */
+    .fl-referral-hub-page .fl-split-page-lower > .fl-intro {
+        padding-block-end: 0;
+    }
+
+    .fl-referral-hub-page .fl-split-page-lower .fl-section:first-of-type {
+        padding-block-start: 0;
+    }
+
     .fl-referral-hub-page .fl-split-page-lower > :last-child {
         padding-block-end: 0;
     }
