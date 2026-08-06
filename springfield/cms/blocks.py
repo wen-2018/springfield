@@ -1137,6 +1137,72 @@ class TagsBlock(blocks.ListBlock):
         label_format = "Tags"
 
 
+# Comparison Table
+
+
+class ComparisonTableCellBlock(blocks.StructBlock):
+    content = blocks.CharBlock(label="Cell content", required=False, help_text="Leave empty if you want to only fill the space.")
+    column_span = blocks.ChoiceBlock(
+        (
+            (1, 1),
+            (2, 2),
+            (3, 3),
+        ),
+        default=1,
+        help_text="Amount of columns this value will visually occupy in the table.",
+        inline_form=True,
+    )
+
+    class Meta:
+        label = "Comparison table cell"
+        form_layout = blocks.BlockGroup(
+            children=["content"],
+            settings=["column_span"],
+        )
+
+
+class ComparisonTableRowBlock(blocks.StructBlock):
+    cells = blocks.ListBlock(ComparisonTableCellBlock, min_num=1, max_num=4)
+
+    class Meta:
+        label = "Comparison table row"
+
+
+class ComparisonTableBlock(blocks.StructBlock):
+    """Comparison table block, with a highlightable column."""
+
+    highlighted_column = blocks.ChoiceBlock(
+        (
+            (1, "Column 1"),
+            (2, "Column 2"),
+            (3, "Column 3"),
+            (4, "Column 4"),
+        ),
+        default=None,
+        required=False,
+        help_text="Column to be visually highlighted. The column may or not exist. Disabled on mobile if the behavior is stacked.",
+        inline_form=True,
+    )
+    mobile_behavior = blocks.ChoiceBlock(
+        (
+            ("scroll", "Horizontal scroll"),
+            ("stacked", "Stacked"),
+        ),
+        default="scroll",
+        inline_form=True,
+    )
+    header_row = blocks.ListBlock(ComparisonTableRowBlock, min_num=1, max_num=1)
+    content_rows = blocks.ListBlock(ComparisonTableRowBlock, min_num=1)
+
+    class Meta:
+        template = "cms/blocks/comparison-table.html"
+        label = "Comparison Table"
+        form_layout = blocks.BlockGroup(
+            children=["header_row", "content_rows"],
+            settings=["highlighted_column", "mobile_behavior"],
+        )
+
+
 # Media
 
 
@@ -1510,6 +1576,20 @@ class TabImpactDashBlock(blocks.StreamBlock):
         label = "Impact dashboard"
 
 
+class TabComparisonTableBlock(blocks.StreamBlock):
+    """Wrapper making ComparisonTableBlock a genuinely optional tab field.
+
+    Same reason as TabReferralControlsBlock: a nested StructBlock's StructValue
+    is an always-populated OrderedDict, so it is always truthy and the template
+    could never tell "not added" from "added".
+    """
+
+    comparison_table = ComparisonTableBlock()
+
+    class Meta:
+        label = "Comparison table"
+
+
 class TabBlock(blocks.StructBlock):
     tab_name = blocks.CharBlock(label="Tab name")
     heading = RichTextBlock(features=HEADING_TEXT_FEATURES, required=False)
@@ -1517,6 +1597,7 @@ class TabBlock(blocks.StructBlock):
     description = RichTextBlock(features=EXPANDED_TEXT_FEATURES, required=False)
     referral_controls = TabReferralControlsBlock(max_num=1, min_num=0, required=False)
     impact_dash = TabImpactDashBlock(max_num=1, min_num=0, required=False)
+    comparison_table = TabComparisonTableBlock(max_num=1, min_num=0, required=False)
     note = RichTextBlock(features=HEADING_TEXT_FEATURES, required=False)
 
     class Meta:
@@ -3201,72 +3282,6 @@ class EnterpriseDownloadBlock(blocks.StaticBlock):
     class Meta:
         template = "cms/blocks/enterprise-download.html"
         label = "Enterprise Download"
-
-
-# Comparison Table
-
-
-class ComparisonTableCellBlock(blocks.StructBlock):
-    content = blocks.CharBlock(label="Cell content", required=False, help_text="Leave empty if you want to only fill the space.")
-    column_span = blocks.ChoiceBlock(
-        (
-            (1, 1),
-            (2, 2),
-            (3, 3),
-        ),
-        default=1,
-        help_text="Amount of columns this value will visually occupy in the table.",
-        inline_form=True,
-    )
-
-    class Meta:
-        label = "Comparison table cell"
-        form_layout = blocks.BlockGroup(
-            children=["content"],
-            settings=["column_span"],
-        )
-
-
-class ComparisonTableRowBlock(blocks.StructBlock):
-    cells = blocks.ListBlock(ComparisonTableCellBlock, min_num=1, max_num=4)
-
-    class Meta:
-        label = "Comparison table row"
-
-
-class ComparisonTableBlock(blocks.StructBlock):
-    """Comparison table block, with a highlightable column."""
-
-    highlighted_column = blocks.ChoiceBlock(
-        (
-            (1, "Column 1"),
-            (2, "Column 2"),
-            (3, "Column 3"),
-            (4, "Column 4"),
-        ),
-        default=None,
-        required=False,
-        help_text="Column to be visually highlighted. The column may or not exist. Disabled on mobile if the behavior is stacked.",
-        inline_form=True,
-    )
-    mobile_behavior = blocks.ChoiceBlock(
-        (
-            ("scroll", "Horizontal scroll"),
-            ("stacked", "Stacked"),
-        ),
-        default="scroll",
-        inline_form=True,
-    )
-    header_row = blocks.ListBlock(ComparisonTableRowBlock, min_num=1, max_num=1)
-    content_rows = blocks.ListBlock(ComparisonTableRowBlock, min_num=1)
-
-    class Meta:
-        template = "cms/blocks/comparison-table.html"
-        label = "Comparison Table"
-        form_layout = blocks.BlockGroup(
-            children=["header_row", "content_rows"],
-            settings=["highlighted_column", "mobile_behavior"],
-        )
 
 
 # Contact Page Form Field Blocks

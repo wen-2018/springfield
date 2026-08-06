@@ -5195,3 +5195,38 @@ def test_impact_dash_badge_context_strips_the_message():
     resolved = ImpactDashBlock._badge_context(_badge(5, message="  five friends  "), install_count=5)
 
     assert resolved["message"] == "five friends"
+
+
+# Comparison table (inside TabBlock)
+
+
+def _tab_comparison_table():
+    """A raw comparison_table stream value holding one table."""
+    return [get_comparison_table_variants()[0]]
+
+
+def test_tab_block_renders_comparison_table():
+    html = _render_tab(referral_controls=False, comparison_table=_tab_comparison_table())
+    wrapper = BeautifulSoup(html, "html.parser").find("div", class_="fl-comparison-table-wrapper")
+
+    assert wrapper is not None
+    assert_comparison_table(wrapper, _tab_comparison_table()[0])
+
+
+def test_tab_block_omits_comparison_table_when_not_added():
+    soup = BeautifulSoup(_render_tab(referral_controls=False, comparison_table=[]), "html.parser")
+
+    assert soup.find("div", class_="fl-comparison-table-wrapper") is None
+
+
+def test_tab_block_renders_when_comparison_table_key_absent_from_stored_json():
+    """Tabs saved before comparison_table existed have no such key at all."""
+    block = TabBlock()
+    value = block.to_python({"tab_name": "Legacy tab", "description": "<p>Legacy description</p>"})
+
+    assert len(value["comparison_table"]) == 0
+
+    soup = BeautifulSoup(block.render(value, context={"section_id": "hub", "tab_index": 1}), "html.parser")
+
+    assert soup.find("div", class_="fl-comparison-table-wrapper") is None
+    assert soup.find("p", class_="fl-tab-description").get_text(strip=True) == "Legacy description"
