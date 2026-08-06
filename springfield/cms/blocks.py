@@ -1139,9 +1139,86 @@ class TagsBlock(blocks.ListBlock):
 
 # Comparison Table
 
+COMPARISON_RESULT_CHOICES = (
+    ("yes", "Yes"),
+    ("no", "No"),
+    ("limited", "Limited"),
+)
+
+COMPARISON_RESULT_ICONS = {
+    "yes": "checkmark-circle-fill",
+    "no": "close-circle-fill",
+    "limited": "subtract-circle-fill",
+}
+
+
+class ComparisonResultValue(blocks.StructValue):
+    """Maps the stored result choice to what the template renders."""
+
+    @property
+    def icon_name(self) -> str:
+        return COMPARISON_RESULT_ICONS.get(self["result"], "")
+
+    @property
+    def display_label(self) -> str:
+        # The choice's own label is the visible text unless the author overrode it.
+        return self["label"] or dict(COMPARISON_RESULT_CHOICES).get(self["result"], "")
+
+
+class ComparisonResultBlock(blocks.StructBlock):
+    """Yes/No/Limited indicator: an icon with its label underneath."""
+
+    result = blocks.ChoiceBlock(COMPARISON_RESULT_CHOICES, default="yes")
+    label = blocks.CharBlock(
+        required=False,
+        help_text='Text below the icon. Leave empty to use the result\'s own name: "Yes", "No" or "Limited".',
+    )
+
+    class Meta:
+        icon = "circle-check"
+        label = "Comparison result"
+        label_format = "Comparison result - {result}"
+        template = "cms/blocks/comparison-result.html"
+        value_class = ComparisonResultValue
+
+
+class ComparisonImageLabelBlock(blocks.StructBlock):
+    """An image with a label underneath it, for comparison table headers."""
+
+    image = ImageChooserBlock(help_text="Image displayed above the label, such as a product logo.")
+    dark_mode_image = ImageChooserBlock(required=False, help_text="Optional dark mode image variant.")
+    alt = blocks.CharBlock(
+        label="Alt Text",
+        required=False,
+        help_text="Text for screen readers describing the image. Leave empty when the label below the image already describes it.",
+    )
+    label = blocks.CharBlock(help_text="Text displayed below the image.")
+
+    class Meta:
+        icon = "image"
+        label = "Image + label"
+        label_format = "Image + label - {label}"
+        template = "cms/blocks/comparison-image-label.html"
+
+
+class ComparisonTableCellContentBlock(blocks.StreamBlock):
+    """Optional richer cell content, used instead of the cell's plain text."""
+
+    comparison_result = ComparisonResultBlock()
+    image_label = ComparisonImageLabelBlock()
+
+    class Meta:
+        label = "Optional content"
+
 
 class ComparisonTableCellBlock(blocks.StructBlock):
     content = blocks.CharBlock(label="Cell content", required=False, help_text="Leave empty if you want to only fill the space.")
+    optional_content = ComparisonTableCellContentBlock(
+        max_num=1,
+        min_num=0,
+        required=False,
+        help_text="Add a comparison result or an image with a label to display instead of the cell content above.",
+    )
     column_span = blocks.ChoiceBlock(
         (
             (1, 1),
@@ -1156,7 +1233,7 @@ class ComparisonTableCellBlock(blocks.StructBlock):
     class Meta:
         label = "Comparison table cell"
         form_layout = blocks.BlockGroup(
-            children=["content"],
+            children=["content", "optional_content"],
             settings=["column_span"],
         )
 

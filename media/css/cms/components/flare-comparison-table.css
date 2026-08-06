@@ -63,6 +63,33 @@
     padding-block-end: var(--token-spacing-xl);
 }
 
+/* Cell contents: comparison result (icon + Yes/No/Limited label) and image + label, used for column headers. */
+
+.fl-comparison-result-icon,
+.fl-comparison-result-label,
+.fl-comparison-image-label-media,
+.fl-comparison-image-label-text {
+    display: block;
+}
+
+.fl-comparison-result-icon {
+    margin-block-end: var(--token-spacing-xs);
+}
+
+.fl-comparison-result-icon .fl-icon {
+    block-size: var(--token-spacing-xl);
+    inline-size: var(--token-spacing-xl);
+}
+
+.fl-comparison-image-label-media {
+    margin-block-end: var(--token-spacing-sm);
+}
+
+.fl-comparison-image-label-media img {
+    block-size: auto;
+    max-inline-size: 100%;
+}
+
 /* Stacked mobile behavior */
 
 .fl-comparison-table-wrapper.stacked {
