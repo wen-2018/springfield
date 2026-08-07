@@ -206,5 +206,6 @@
 
 /* Comparison table - browser comparison variant */
 --comparison-table-browser-highlighted-bg: var(--token-color-soft-purple);
+--comparison-table-browser-highlighted-text-color: var(--token-color-purple);
 --comparison-table-browser-border-color: var(--token-color-light-purple);
---comparison-table-browser-text-color: #c7a8ff;
+--comparison-table-browser-text-color: var(--token-color-soft-purple-4);

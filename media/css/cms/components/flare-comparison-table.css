@@ -53,7 +53,7 @@
 }
 
 .fl-comparison-table tbody tr {
-    border-block-start: 1px solid var(--token-color-soft-purple-2);
+    border-block-start: 1px solid var(--comparison-table-border-color);
 }
 
 .fl-comparison-table tbody tr:last-child th.highlighted,
@@ -91,15 +91,19 @@
 }
 
 /* Browser comparison variant */
-
 .fl-comparison-table-wrapper.browser-comparison {
     --comparison-table-highlighted-bg: var(
         --comparison-table-browser-highlighted-bg
     );
+    --comparison-table-text-color: var(--comparison-table-browser-text-color);
+    --comparison-table-border-color: var(
+        --comparison-table-browser-border-color
+    );
 }
 
-.fl-comparison-table-wrapper.browser-comparison .fl-comparison-table tbody tr {
-    border-block-start-color: var(--comparison-table-browser-border-color);
+.fl-comparison-table-wrapper.browser-comparison
+    .fl-comparison-image-label-text {
+    color: var(--fl-theme-color-text);
 }
 
 .fl-comparison-table-wrapper.browser-comparison
@@ -107,14 +111,6 @@
     img {
     block-size: auto;
     inline-size: 30px;
-}
-
-.fl-comparison-table-wrapper.browser-comparison
-    .highlighted
-    .fl-comparison-image-label-media
-    img {
-    block-size: auto;
-    inline-size: 54px;
 }
 
 .fl-comparison-table-wrapper.browser-comparison th .fl-comparison-image-label,
@@ -128,6 +124,25 @@
 .fl-comparison-table-wrapper.browser-comparison th .fl-comparison-image-label {
     align-items: center;
     justify-content: flex-end;
+}
+
+/* Browser comparison variant - highlighted */
+.fl-comparison-table-wrapper.browser-comparison
+    .highlighted
+    .fl-comparison-image-label-media
+    img {
+    block-size: auto;
+    inline-size: 54px;
+}
+
+.fl-comparison-table-wrapper.browser-comparison .highlighted {
+    color: var(--comparison-table-browser-highlighted-text-color);
+}
+
+.fl-comparison-table-wrapper.browser-comparison
+    .highlighted
+    .fl-comparison-image-label-text {
+    color: var(--comparison-table-browser-highlighted-text-color);
 }
 
 /* Stacked mobile behavior */
