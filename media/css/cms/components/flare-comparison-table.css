@@ -1,6 +1,6 @@
 .fl-comparison-table-wrapper {
     inline-size: 100%;
-    overflow-x: scroll;
+    overflow-x: auto;
 }
 
 .fl-comparison-table {
@@ -90,6 +90,46 @@
     max-inline-size: 100%;
 }
 
+/* Browser comparison variant */
+
+.fl-comparison-table-wrapper.browser-comparison {
+    --comparison-table-highlighted-bg: var(
+        --comparison-table-browser-highlighted-bg
+    );
+}
+
+.fl-comparison-table-wrapper.browser-comparison .fl-comparison-table tbody tr {
+    border-block-start-color: var(--comparison-table-browser-border-color);
+}
+
+.fl-comparison-table-wrapper.browser-comparison
+    .fl-comparison-image-label-media
+    img {
+    block-size: auto;
+    inline-size: 30px;
+}
+
+.fl-comparison-table-wrapper.browser-comparison
+    .highlighted
+    .fl-comparison-image-label-media
+    img {
+    block-size: auto;
+    inline-size: 54px;
+}
+
+.fl-comparison-table-wrapper.browser-comparison th .fl-comparison-image-label,
+.fl-comparison-table-wrapper.browser-comparison td .fl-comparison-result {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.fl-comparison-table-wrapper.browser-comparison th .fl-comparison-image-label {
+    align-items: center;
+    justify-content: flex-end;
+}
+
 /* Stacked mobile behavior */
 
 .fl-comparison-table-wrapper.stacked {
@@ -97,6 +137,11 @@
 }
 
 @media (--viewport-below-md) {
+    /* Browser comparison variant */
+
+    /* .fl-comparison-table-wrapper.browser-comparison {
+    } */
+
     .fl-comparison-table-wrapper.stacked thead,
     .fl-comparison-table-wrapper.stacked tbody {
         display: block;

@@ -1,0 +1,36 @@
+/*
+* This Source Code Form is subject to the terms of the Mozilla Public
+* License, v. 2.0. If a copy of the MPL was not distributed with this
+* file, You can obtain one at https://mozilla.org/MPL/2.0/.
+*/
+
+/* Required for postcss-custom-media to resolve @custom-media variables in standalone bundles */
+@import 'variables/flare-media-query-tokens.css';
+
+@layer page {
+    /* Upper band */
+    .fl-referral-get-firefox-page .fl-showcase-description {
+        margin: auto;
+    }
+
+    .fl-referral-get-firefox-page .fl-comparison-table-wrapper {
+        padding-block-end: 0;
+    }
+
+    /* Lower band */
+    .fl-referral-get-firefox-page
+        .fl-split-page-lower
+        .fl-section:first-of-type {
+        padding-block-start: 0;
+    }
+
+    .fl-referral-get-firefox-page .fl-split-page-lower > :last-child {
+        padding-block-end: 0;
+    }
+
+    @media (--viewport-md-up) {
+        .fl-referral-get-firefox-page {
+            --section-border-radius: var(--token-border-radius-xl);
+        }
+    }
+}

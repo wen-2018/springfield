@@ -3716,8 +3716,16 @@ def assert_comparison_table(wrapper_el: BeautifulSoup, block_data: dict):
     value = block_data["value"]
     mobile_behavior = value["mobile_behavior"]
     highlighted_column = value.get("highlighted_column") or None
+    # Tables saved before the variant setting existed have no such key.
+    variant = value.get("variant", "default")
 
-    assert mobile_behavior in wrapper_el.get("class", [])
+    wrapper_classes = wrapper_el.get("class", [])
+    assert mobile_behavior in wrapper_classes
+    # The default variant adds no modifier class, so it keeps the base palette.
+    if variant == "default":
+        assert "browser-comparison" not in wrapper_classes
+    else:
+        assert variant in wrapper_classes
 
     header_cells_data = [c["value"] for c in value["header_row"][0]["value"]["cells"]]
     header_cell_els = wrapper_el.find("thead").find_all(["th", "td"])
@@ -3785,10 +3793,11 @@ def test_comparison_table_variants(index_page, rf):
             assert_comparison_table(table, variant)
 
 
-def _render_comparison_table(header_cells, content_rows, mobile_behavior="scroll", highlighted_column=None):
+def _render_comparison_table(header_cells, content_rows, mobile_behavior="scroll", highlighted_column=None, variant="default"):
     block = ComparisonTableBlock()
     value = block.to_python(
         {
+            "variant": variant,
             "highlighted_column": highlighted_column,
             "mobile_behavior": mobile_behavior,
             "header_row": [comparison_row(cells=header_cells, row_id="hr")],
@@ -3869,6 +3878,45 @@ def test_comparison_image_label_renders_author_alt_text(placeholder_images):
     )
 
     assert_comparison_image_label(soup.find("thead").find_all(["th", "td"])[1], header_cell["value"]["optional_content"][0]["value"])
+
+
+def _comparison_variant_wrapper_classes(variant):
+    soup = _render_comparison_table(
+        header_cells=[comparison_cell(""), comparison_cell("Firefox")],
+        content_rows=[comparison_row(cells=[comparison_cell("Blocks trackers"), comparison_cell("Yes")], row_id="r0")],
+        variant=variant,
+    )
+    return soup.find("div", class_="fl-comparison-table-wrapper").get("class", [])
+
+
+def test_comparison_table_browser_variant_adds_modifier_class():
+    """The variant class is what swaps the highlight and border colors in CSS."""
+    assert "browser-comparison" in _comparison_variant_wrapper_classes("browser-comparison")
+
+
+def test_comparison_table_default_variant_adds_no_modifier_class():
+    classes = _comparison_variant_wrapper_classes("default")
+
+    assert "browser-comparison" not in classes
+    assert "default" not in classes
+
+
+def test_comparison_table_renders_when_variant_key_absent_from_stored_json():
+    """Tables saved before the variant setting existed have no such key at all."""
+    block = ComparisonTableBlock()
+    value = block.to_python(
+        {
+            "mobile_behavior": "scroll",
+            "header_row": [comparison_row(cells=[comparison_cell("PREMIUM")], row_id="hr")],
+            "content_rows": [comparison_row(cells=[comparison_cell("24 hrs/day")], row_id="r0")],
+        }
+    )
+
+    assert value["variant"] == "default"
+
+    wrapper = BeautifulSoup(block.render(value), "html.parser").find("div", class_="fl-comparison-table-wrapper")
+
+    assert "browser-comparison" not in wrapper.get("class", [])
 
 
 def test_comparison_table_renders_cells_saved_before_optional_content_existed():

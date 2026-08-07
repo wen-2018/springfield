@@ -1248,6 +1248,15 @@ class ComparisonTableRowBlock(blocks.StructBlock):
 class ComparisonTableBlock(blocks.StructBlock):
     """Comparison table block, with a highlightable column."""
 
+    variant = blocks.ChoiceBlock(
+        (
+            ("default", "Default"),
+            ("browser-comparison", "Browser comparison"),
+        ),
+        default="default",
+        help_text="Visual variations of the table. Browser comparison uses its own styles.",
+        inline_form=True,
+    )
     highlighted_column = blocks.ChoiceBlock(
         (
             (1, "Column 1"),
@@ -1276,7 +1285,7 @@ class ComparisonTableBlock(blocks.StructBlock):
         label = "Comparison Table"
         form_layout = blocks.BlockGroup(
             children=["header_row", "content_rows"],
-            settings=["highlighted_column", "mobile_behavior"],
+            settings=["variant", "highlighted_column", "mobile_behavior"],
         )
 
 
