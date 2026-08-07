@@ -36,7 +36,22 @@
         padding: 0;
     }
 
-    /* comparison table */
+    .fl-referral-get-firefox-page .fl-tabs-nav[role='tablist'] {
+        border: none;
+    }
+
+    .fl-referral-get-firefox-page .fl-tabs button[role='tab'] {
+        border: 2px solid var(--token-color-light-purple);
+        border-radius: 50%;
+        padding: var(--token-spacing-sm);
+    }
+
+    .fl-referral-get-firefox-page .fl-tabs [role='tab'][aria-selected='true'] {
+        background: var(--token-color-link-purple);
+        border-color: transparent;
+    }
+
+    /* comparison table layout */
     .fl-referral-get-firefox-page .fl-comparison-table-wrapper {
         padding-block-end: 0;
     }
@@ -52,27 +67,14 @@
         padding-block-end: 0;
     }
 
-    /* mobile specific styles */
+    @media (--viewport-sm-up) {
+        .fl-referral-get-firefox-page .fl-tabs .fl-tabs-nav[role='tablist'] {
+            gap: var(--token-spacing-lg);
+        }
+    }
+
     @media (--viewport-below-md) {
-        .fl-referral-get-firefox-page .fl-comparison-image-header-text,
-        .fl-referral-get-firefox-page .fl-comparison-result-label {
-            font-size: 10px;
-        }
-
-        .fl-referral-get-firefox-page .fl-comparison-table {
-            table-layout: fixed;
-        }
-
-        .fl-referral-get-firefox-page .fl-comparison-table th:not(:first-child),
-        .fl-referral-get-firefox-page
-            .fl-comparison-table
-            td:not(:first-child) {
-            inline-size: 64px;
-            min-inline-size: 0;
-            overflow-wrap: break-word;
-            padding-inline: var(--token-spacing-xs);
-        }
-
+        /* tabs */
         .fl-referral-get-firefox-page .fl-tabs-tab-label {
             /* button text visually hidden on small screen sizes */
             block-size: 1px;
@@ -104,13 +106,25 @@
             max-inline-size: 100%;
         }
 
-        /* .fl-referral-get-firefox-page .fl-tabs {
-        } */
+        /* tabs */
+        .fl-referral-get-firefox-page .fl-tabs .fl-tabs-nav[role='tablist'] {
+            gap: var(--token-spacing-2xs);
+        }
+
+        .fl-referral-get-firefox-page .fl-tabs button[role='tab'] {
+            border-radius: var(--token-border-radius-md);
+            padding: var(--token-spacing-sm) var(--token-spacing-xl);
+        }
     }
 
     @media (--viewport-lg-up) {
         .fl-referral-get-firefox-page .fl-split-page-upper .fl-showcase {
             max-inline-size: 1106px;
+        }
+
+        /* tabs */
+        .fl-referral-get-firefox-page .fl-tabs .fl-tabs-nav[role='tablist'] {
+            gap: var(--token-spacing-lg);
         }
     }
 }

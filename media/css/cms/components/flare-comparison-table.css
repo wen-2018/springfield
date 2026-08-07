@@ -213,12 +213,35 @@
 }
 
 @media (--viewport-below-md) {
-    /* Browser comparison variant */
-
+    /* Browser comparison variant - mobile specific styles */
     .fl-comparison-table-wrapper.browser-comparison {
         margin-block-end: var(--token-layout-md);
     }
 
+    .fl-comparison-table-wrapper.browser-comparison
+        .fl-comparison-image-header-text,
+    .fl-comparison-table-wrapper.browser-comparison
+        .fl-comparison-result-label {
+        font-size: 10px;
+    }
+
+    .fl-comparison-table-wrapper.browser-comparison .fl-comparison-table {
+        table-layout: fixed;
+    }
+
+    .fl-comparison-table-wrapper.browser-comparison
+        .fl-comparison-table
+        th:not(:first-child),
+    .fl-comparison-table-wrapper.browser-comparison
+        .fl-comparison-table
+        td:not(:first-child) {
+        inline-size: 64px;
+        min-inline-size: 0;
+        overflow-wrap: break-word;
+        padding-inline: var(--token-spacing-xs);
+    }
+
+    /* default comparison table mobile styles */
     .fl-comparison-table-wrapper.stacked thead,
     .fl-comparison-table-wrapper.stacked tbody {
         display: block;
