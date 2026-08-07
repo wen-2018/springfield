@@ -52,9 +52,29 @@
         padding-block-end: 0;
     }
 
+    /* mobile specific styles */
     @media (--viewport-below-md) {
+        .fl-referral-get-firefox-page .fl-comparison-image-header-text,
+        .fl-referral-get-firefox-page .fl-comparison-result-label {
+            font-size: 10px;
+        }
+
+        .fl-referral-get-firefox-page .fl-comparison-table {
+            table-layout: fixed;
+        }
+
+        .fl-referral-get-firefox-page .fl-comparison-table th:not(:first-child),
+        .fl-referral-get-firefox-page
+            .fl-comparison-table
+            td:not(:first-child) {
+            inline-size: 64px;
+            min-inline-size: 0;
+            overflow-wrap: break-word;
+            padding-inline: var(--token-spacing-xs);
+        }
+
         .fl-referral-get-firefox-page .fl-tabs-tab-label {
-            /* visually hidden on small screen sizes */
+            /* button text visually hidden on small screen sizes */
             block-size: 1px;
             border: 0;
             clip-path: inset(100%);
