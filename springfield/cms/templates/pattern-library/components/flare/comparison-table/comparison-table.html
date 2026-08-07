@@ -35,11 +35,11 @@
           {% set cell_tag = 'th' if cell.label else 'td' %}
           <{{ cell_tag }} {% if cell.label %}scope="col"{% endif %} {% if loop.index == 2 %}class="highlighted"{% endif %}>
             {% if cell.url %}
-              <include:comparison-image-label label="{{ cell.label }}">
+              <include:comparison-image-header label="{{ cell.label }}">
                 <content:image>
                   <img src="{{ cell.url }}" alt="" width="200" loading="lazy" />
                 </content:image>
-              </include:comparison-image-label>
+              </include:comparison-image-header>
             {% endif %}
           </{{ cell_tag }}>
         {% endfor %}
@@ -71,11 +71,11 @@
           {% set cell_tag = 'th' if cell.label else 'td' %}
           <{{ cell_tag }} {% if cell.label %}scope="col"{% endif %} {% if loop.index == 2 %}class="highlighted"{% endif %}>
             {% if cell.url %}
-              <include:comparison-image-label label="{{ cell.label }}">
+              <include:comparison-image-header label="{{ cell.label }}">
                 <content:image>
                   <img src="{{ cell.url }}" alt="" width="200" loading="lazy" />
                 </content:image>
-              </include:comparison-image-label>
+              </include:comparison-image-header>
             {% endif %}
           </{{ cell_tag }}>
         {% endfor %}

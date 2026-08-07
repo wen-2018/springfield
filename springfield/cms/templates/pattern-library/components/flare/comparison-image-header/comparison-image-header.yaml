@@ -1,4 +1,4 @@
-name: Comparison Image + Label
+name: Comparison Image Header
 context:
   items:
     - url: /media/img/firefox/flare/placeholder.png

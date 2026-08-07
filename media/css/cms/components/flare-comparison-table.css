@@ -63,12 +63,12 @@
     padding-block-end: var(--token-spacing-xl);
 }
 
-/* Cell contents: comparison result (icon + Yes/No/Limited label) and image + label, used for column headers. */
+/* Cell contents: comparison result (icon + Yes/No/Limited label) and image header, used for column headers. */
 
 .fl-comparison-result-icon,
 .fl-comparison-result-label,
-.fl-comparison-image-label-media,
-.fl-comparison-image-label-text {
+.fl-comparison-image-header-media,
+.fl-comparison-image-header-text {
     display: block;
 }
 
@@ -81,11 +81,11 @@
     inline-size: var(--token-spacing-xl);
 }
 
-.fl-comparison-image-label-media {
+.fl-comparison-image-header-media {
     margin-block-end: var(--token-spacing-sm);
 }
 
-.fl-comparison-image-label-media img {
+.fl-comparison-image-header-media img {
     block-size: auto;
     max-inline-size: 100%;
 }
@@ -102,18 +102,18 @@
 }
 
 .fl-comparison-table-wrapper.browser-comparison
-    .fl-comparison-image-label-text {
+    .fl-comparison-image-header-text {
     color: var(--fl-theme-color-text);
 }
 
 .fl-comparison-table-wrapper.browser-comparison
-    .fl-comparison-image-label-media
+    .fl-comparison-image-header-media
     img {
     block-size: auto;
     inline-size: 30px;
 }
 
-.fl-comparison-table-wrapper.browser-comparison th .fl-comparison-image-label,
+.fl-comparison-table-wrapper.browser-comparison th .fl-comparison-image-header,
 .fl-comparison-table-wrapper.browser-comparison td .fl-comparison-result {
     align-items: center;
     display: flex;
@@ -121,7 +121,7 @@
     justify-content: center;
 }
 
-.fl-comparison-table-wrapper.browser-comparison th .fl-comparison-image-label {
+.fl-comparison-table-wrapper.browser-comparison th .fl-comparison-image-header {
     align-items: center;
     justify-content: flex-end;
 }
@@ -129,7 +129,7 @@
 /* Browser comparison variant - highlighted */
 .fl-comparison-table-wrapper.browser-comparison
     .highlighted
-    .fl-comparison-image-label-media
+    .fl-comparison-image-header-media
     img {
     block-size: auto;
     inline-size: 54px;
@@ -141,7 +141,7 @@
 
 .fl-comparison-table-wrapper.browser-comparison
     .highlighted
-    .fl-comparison-image-label-text {
+    .fl-comparison-image-header-text {
     color: var(--comparison-table-browser-highlighted-text-color);
 }
 

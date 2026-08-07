@@ -16,8 +16,8 @@ const components = [
         url: `${patternLibraryURL}/comparison-result/comparison-result.html`
     },
     {
-        name: 'comparison-image-label',
-        url: `${patternLibraryURL}/comparison-image-label/comparison-image-label.html`
+        name: 'comparison-image-header',
+        url: `${patternLibraryURL}/comparison-image-header/comparison-image-header.html`
     }
 ];
 

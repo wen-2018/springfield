@@ -92,7 +92,7 @@ from springfield.cms.fixtures.comparison_table_fixtures import (
     cell as comparison_cell,
     get_comparison_table_test_page,
     get_comparison_table_variants,
-    image_label_cell,
+    image_header_cell,
     result_cell,
     row as comparison_row,
 )
@@ -3677,16 +3677,16 @@ def assert_comparison_result(cell_el: BeautifulSoup, result_data: dict):
     assert result_el.find("span", class_="fl-comparison-result-label").get_text(strip=True) == expected_label
 
 
-def assert_comparison_image_label(cell_el: BeautifulSoup, image_label_data: dict):
-    wrapper_el = cell_el.find("div", class_="fl-comparison-image-label")
+def assert_comparison_image_header(cell_el: BeautifulSoup, image_header_data: dict):
+    wrapper_el = cell_el.find("div", class_="fl-comparison-image-header")
     assert wrapper_el is not None
-    assert wrapper_el.find("span", class_="fl-comparison-image-label-text").get_text(strip=True) == image_label_data["label"]
+    assert wrapper_el.find("span", class_="fl-comparison-image-header-text").get_text(strip=True) == image_header_data["label"]
 
-    img_els = wrapper_el.find("span", class_="fl-comparison-image-label-media").find_all("img")
-    has_dark_mode = bool(image_label_data.get("dark_mode_image"))
+    img_els = wrapper_el.find("span", class_="fl-comparison-image-header-media").find_all("img")
+    has_dark_mode = bool(image_header_data.get("dark_mode_image"))
     assert len(img_els) == (2 if has_dark_mode else 1)
     for img_el in img_els:
-        assert img_el.get("alt") == image_label_data["alt"]
+        assert img_el.get("alt") == image_header_data["alt"]
         assert img_el.get("loading") == "lazy"
         assert img_el.get("srcset")
     if has_dark_mode:
@@ -3705,7 +3705,7 @@ def assert_comparison_cell_contents(cell_el: BeautifulSoup, cell_data: dict):
     if child["type"] == "comparison_result":
         assert_comparison_result(cell_el, child["value"])
     else:
-        assert_comparison_image_label(cell_el, child["value"])
+        assert_comparison_image_header(cell_el, child["value"])
 
 
 def comparison_cell_is_filled(cell_data: dict) -> bool:
@@ -3853,31 +3853,31 @@ def test_comparison_cell_optional_content_replaces_plain_text():
     assert_comparison_result(value_cell, cell_data["value"]["optional_content"][0]["value"])
 
 
-def test_comparison_header_cell_with_image_label_is_a_column_header(placeholder_images):
-    header_cell = image_label_cell("Firefox", cell_id="h1")
+def test_comparison_header_cell_with_image_header_is_a_column_header(placeholder_images):
+    header_cell = image_header_cell("Firefox", cell_id="h1")
     soup = _render_comparison_table(
         header_cells=[comparison_cell(""), header_cell],
         content_rows=[comparison_row(cells=[comparison_cell("Blocks trackers"), result_cell("yes", cell_id="c1")], row_id="r0")],
     )
 
     header_cell_els = soup.find("thead").find_all(["th", "td"])
-    # The empty corner cell stays a plain <td>; the image + label cell is a real
+    # The empty corner cell stays a plain <td>; the image header cell is a real
     # column header, named by the label under the image.
     assert header_cell_els[0].name == "td"
     assert header_cell_els[1].name == "th"
     assert header_cell_els[1].get("scope") == "col"
-    assert_comparison_image_label(header_cell_els[1], header_cell["value"]["optional_content"][0]["value"])
+    assert_comparison_image_header(header_cell_els[1], header_cell["value"]["optional_content"][0]["value"])
 
 
-def test_comparison_image_label_renders_author_alt_text(placeholder_images):
-    header_cell = image_label_cell("Firefox", cell_id="h1")
+def test_comparison_image_header_renders_author_alt_text(placeholder_images):
+    header_cell = image_header_cell("Firefox", cell_id="h1")
     header_cell["value"]["optional_content"][0]["value"]["alt"] = "Firefox logo"
     soup = _render_comparison_table(
         header_cells=[comparison_cell(""), header_cell],
         content_rows=[comparison_row(cells=[comparison_cell("Blocks trackers"), result_cell("yes", cell_id="c1")], row_id="r0")],
     )
 
-    assert_comparison_image_label(soup.find("thead").find_all(["th", "td"])[1], header_cell["value"]["optional_content"][0]["value"])
+    assert_comparison_image_header(soup.find("thead").find_all(["th", "td"])[1], header_cell["value"]["optional_content"][0]["value"])
 
 
 def _comparison_variant_wrapper_classes(variant):

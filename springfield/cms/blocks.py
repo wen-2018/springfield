@@ -1182,7 +1182,7 @@ class ComparisonResultBlock(blocks.StructBlock):
         value_class = ComparisonResultValue
 
 
-class ComparisonImageLabelBlock(blocks.StructBlock):
+class ComparisonImageHeaderBlock(blocks.StructBlock):
     """An image with a label underneath it, for comparison table headers."""
 
     image = ImageChooserBlock(help_text="Image displayed above the label, such as a product logo.")
@@ -1196,16 +1196,16 @@ class ComparisonImageLabelBlock(blocks.StructBlock):
 
     class Meta:
         icon = "image"
-        label = "Image + label"
-        label_format = "Image + label - {label}"
-        template = "cms/blocks/comparison-image-label.html"
+        label = "Image header"
+        label_format = "Image header - {label}"
+        template = "cms/blocks/comparison-image-header.html"
 
 
 class ComparisonTableCellContentBlock(blocks.StreamBlock):
     """Optional richer cell content, used instead of the cell's plain text."""
 
     comparison_result = ComparisonResultBlock()
-    image_label = ComparisonImageLabelBlock()
+    image_header = ComparisonImageHeaderBlock()
 
     class Meta:
         label = "Optional content"
@@ -1217,7 +1217,7 @@ class ComparisonTableCellBlock(blocks.StructBlock):
         max_num=1,
         min_num=0,
         required=False,
-        help_text="Add a comparison result or an image with a label to display instead of the cell content above.",
+        help_text="Add a comparison result or an image header to display instead of the cell content above.",
     )
     column_span = blocks.ChoiceBlock(
         (

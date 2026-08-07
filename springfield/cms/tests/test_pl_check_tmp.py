@@ -10,7 +10,7 @@ import pytest
 
 PATHS = [
     "/pattern-library/render-pattern/pattern-library/components/flare/comparison-result/comparison-result.html",
-    "/pattern-library/render-pattern/pattern-library/components/flare/comparison-image-label/comparison-image-label.html",
+    "/pattern-library/render-pattern/pattern-library/components/flare/comparison-image-header/comparison-image-header.html",
 ]
 
 

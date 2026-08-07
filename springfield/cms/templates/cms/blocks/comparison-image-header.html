@@ -8,7 +8,7 @@
 {% set widths = "width-{100,200,300,400}" %}
 {% set classes = image_variant_classes(value.dark_mode_image) %}
 
-<include:comparison-image-label label="{{ value.label }}">
+<include:comparison-image-header label="{{ value.label }}">
   <content:image>
     {{ srcset_image(
         value.image,
@@ -34,4 +34,4 @@
       ) }}
     {% endif %}
   </content:image>
-</include:comparison-image-label>
+</include:comparison-image-header>

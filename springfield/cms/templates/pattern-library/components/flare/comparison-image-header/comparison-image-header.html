@@ -4,13 +4,13 @@
   file, You can obtain one at https://mozilla.org/MPL/2.0/.
 #}
 
-<div data-testid="comparison-image-label" style=
+<div data-testid="comparison-image-header" style=
 "display: flex; gap: 40px;">
   {% for item in items %}
-    <include:comparison-image-label label="{{ item.label }}">
+    <include:comparison-image-header label="{{ item.label }}">
       <content:image>
         <img src="{{ item.url }}" alt="{{ item.alt }}" width="200" loading="lazy" />
       </content:image>
-    </include:comparison-image-label>
+    </include:comparison-image-header>
   {% endfor %}
 </div>

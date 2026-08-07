@@ -20,7 +20,7 @@ CONTENT_ROWS = [
     ["Business reviews", "Quarterly", "—"],
 ]
 
-# Optional cell content data: image + label headers and Yes/No/Limited results.
+# Optional cell content data: image headers and Yes/No/Limited results.
 # The third column's results carry a label override to show that option.
 RESULT_HEADERS = ["", "Firefox", "Other browsers"]
 RESULT_ROWS = [
@@ -56,13 +56,13 @@ def result_cell(result, label="", cell_id=""):
     )
 
 
-def image_label_cell(label, cell_id="", dark_mode_image=None):
+def image_header_cell(label, cell_id="", dark_mode_image=None):
     return cell(
         "",
         cell_id=cell_id,
         optional_content=[
             {
-                "type": "image_label",
+                "type": "image_header",
                 "value": {
                     "image": settings.PLACEHOLDER_IMAGE_ID,
                     "dark_mode_image": dark_mode_image,
@@ -110,8 +110,8 @@ def make_optional_content_header_row(prefix):
     return row(
         cells=[
             cell(RESULT_HEADERS[0], cell_id=f"{prefix}-h0"),
-            image_label_cell(RESULT_HEADERS[1], cell_id=f"{prefix}-h1", dark_mode_image=settings.PLACEHOLDER_DARK_IMAGE_ID),
-            image_label_cell(RESULT_HEADERS[2], cell_id=f"{prefix}-h2"),
+            image_header_cell(RESULT_HEADERS[1], cell_id=f"{prefix}-h1", dark_mode_image=settings.PLACEHOLDER_DARK_IMAGE_ID),
+            image_header_cell(RESULT_HEADERS[2], cell_id=f"{prefix}-h2"),
         ],
         row_id=f"{prefix}-hr",
     )
@@ -174,7 +174,7 @@ def get_comparison_table_variants() -> list[dict]:
             },
             "id": "ctbl0002-0000-0000-0000-000000000002",
         },
-        # Optional cell content: image + label headers, Yes/No/Limited results
+        # Optional cell content: image headers, Yes/No/Limited results
         {
             "type": "comparison_table",
             "value": {
@@ -202,7 +202,7 @@ def get_comparison_table_variants() -> list[dict]:
 
 def get_comparison_table_test_page() -> FreeFormPage2026:
     index_page = get_flare_blocks_docs_page()
-    # The image + label cells reference the placeholder images by ID.
+    # The image header cells reference the placeholder images by ID.
     get_placeholder_images()
 
     page = get_or_create_page(
@@ -216,7 +216,7 @@ def get_comparison_table_test_page() -> FreeFormPage2026:
     sections = [
         section("Scroll — highlighted column 2", variants[0], "ctblsec01-0000-0000-0000-000000000001"),
         section("Stacked — highlighted column 2 (disabled on mobile)", variants[1], "ctblsec02-0000-0000-0000-000000000002"),
-        section("Optional cell content — image + label headers, Yes/No/Limited results", variants[2], "ctblsec03-0000-0000-0000-000000000003"),
+        section("Optional cell content — image headers, Yes/No/Limited results", variants[2], "ctblsec03-0000-0000-0000-000000000003"),
         section("Browser comparison variant", variants[3], "ctblsec04-0000-0000-0000-000000000004"),
     ]
     page.upper_content = sections
@@ -228,7 +228,7 @@ def get_comparison_table_test_page() -> FreeFormPage2026:
         "The highlight is automatically disabled in stacked mode.</p>"
         "<p>Each cell takes plain text, or <b>optional content</b> that replaces it: a <b>comparison result</b> "
         "(Yes, No or Limited, rendered as an icon with its name underneath &mdash; the name can be overridden) "
-        "or an <b>image + label</b>, which suits column headers.</p>"
+        "or an <b>image header</b>, which suits column headers.</p>"
         "<p>Use <b>variant</b> to switch the visual treatment. <b>Browser comparison</b> adds a "
         "<code>browser-comparison</code> class to the wrapper and draws its highlight and row borders from its own "
         "theme variables, so it can differ from the default table in both light and dark mode.</p>"
