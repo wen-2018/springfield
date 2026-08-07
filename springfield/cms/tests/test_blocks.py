@@ -4799,6 +4799,41 @@ def test_tabs_block_renders_a_distinct_qr_dialog_id_per_tab():
     assert all(target == dialog_id for target, dialog_id in targets_to_dialogs.items())
 
 
+def _render_tablist(tabs):
+    """Render TabsBlock and return its tablist, given raw tab dicts."""
+    block = TabsBlock()
+    value = block.to_python({"section_id": "hub", "tabs": tabs})
+    soup = BeautifulSoup(block.render(value, context={"invite_url": INVITE_URL}), "html.parser")
+    return soup.find("div", attrs={"role": "tablist"})
+
+
+def test_tabs_block_tab_button_renders_its_icon_alongside_the_name():
+    tablist = _render_tablist([{"tab_name": "First tab", "icon": "gift"}])
+
+    button = tablist.find("button", attrs={"role": "tab"})
+    icon_span = button.find("span", class_="fl-icon")
+    assert icon_span and "fl-icon-gift" in icon_span["class"]
+    # Decorative only: the tab name is the accessible name, so the icon must not
+    # be announced as a second, duplicate label.
+    assert icon_span["aria-hidden"] == "true"
+    assert button.find("span", class_="fl-tabs-tab-label").get_text(strip=True) == "First tab"
+
+
+def test_tabs_block_tab_button_omits_the_icon_when_none_is_chosen():
+    """The icon is optional, including for tabs saved before the field existed.
+
+    An unchosen IconChoiceBlock stores "", which would otherwise render a bare
+    `fl-icon` span: an empty mask box taking up space beside the name.
+    """
+    tablist = _render_tablist([{"tab_name": "First tab", "icon": ""}, {"tab_name": "Legacy tab"}])
+
+    buttons = tablist.find_all("button", attrs={"role": "tab"})
+    assert len(buttons) == 2
+    for button in buttons:
+        assert button.find("span", class_="fl-icon") is None
+    assert [b.get_text(strip=True) for b in buttons] == ["First tab", "Legacy tab"]
+
+
 def _email_href(html):
     return BeautifulSoup(html, "html.parser").find("a", class_="fl-referral-controls-share-email")["href"]
 

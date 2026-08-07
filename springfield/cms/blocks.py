@@ -1678,6 +1678,7 @@ class TabComparisonTableBlock(blocks.StreamBlock):
 
 class TabBlock(blocks.StructBlock):
     tab_name = blocks.CharBlock(label="Tab name")
+    icon = IconChoiceBlock(required=False, label="Tab icon", help_text="Optional icon shown before the tab name in the tab list.")
     heading = RichTextBlock(features=HEADING_TEXT_FEATURES, required=False)
     image = ImageChooserBlock(required=False)
     description = RichTextBlock(features=EXPANDED_TEXT_FEATURES, required=False)
@@ -1690,6 +1691,7 @@ class TabBlock(blocks.StructBlock):
         label = "Tab"
         label_format = "{tab_name}"
         template = "cms/blocks/tab.html"
+        value_class = IconStructValue
 
 
 class TabsBlock(blocks.StructBlock):

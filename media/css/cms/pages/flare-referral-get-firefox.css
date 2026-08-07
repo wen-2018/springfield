@@ -8,11 +8,35 @@
 @import 'variables/flare-media-query-tokens.css';
 
 @layer page {
-    /* Upper band */
-    .fl-referral-get-firefox-page .fl-showcase-description {
+    /* Upper band - showcase */
+    .fl-referral-get-firefox-page .fl-split-page-upper .fl-showcase {
+        background: var(--token-color-purple);
+        border-radius: var(--token-border-radius-md);
+        gap: 0;
+        max-inline-size: calc(100% - var(--token-spacing-lg) * 2);
+        padding: var(--token-layout-sm) var(--token-spacing-lg);
+    }
+
+    .fl-referral-get-firefox-page
+        .fl-split-page-upper
+        .fl-showcase
+        .fl-showcase-heading {
+        font-size: var(--fl-theme-font-size-heading-md);
+    }
+
+    .fl-referral-get-firefox-page
+        .fl-split-page-upper
+        .fl-showcase-description {
         margin: auto;
     }
 
+    /* tabs */
+    .fl-referral-get-firefox-page .fl-tabs {
+        border: none;
+        padding: 0;
+    }
+
+    /* comparison table */
     .fl-referral-get-firefox-page .fl-comparison-table-wrapper {
         padding-block-end: 0;
     }
@@ -28,9 +52,45 @@
         padding-block-end: 0;
     }
 
+    @media (--viewport-below-md) {
+        .fl-referral-get-firefox-page .fl-tabs-tab-label {
+            /* visually hidden on small screen sizes */
+            block-size: 1px;
+            border: 0;
+            clip-path: inset(100%);
+            inline-size: 1px;
+            margin: -1px;
+            padding: 0;
+            position: absolute;
+            white-space: nowrap;
+            clip: rect(0 0 0 0);
+            overflow: hidden;
+        }
+    }
+
     @media (--viewport-md-up) {
         .fl-referral-get-firefox-page {
             --section-border-radius: var(--token-border-radius-xl);
+        }
+
+        .fl-referral-get-firefox-page .fl-split-page-upper .fl-showcase {
+            max-inline-size: calc(100% - var(--token-border-radius-md) * 2);
+        }
+
+        .fl-referral-get-firefox-page
+            .fl-split-page-upper
+            .fl-showcase
+            .fl-showcase-media {
+            max-inline-size: 100%;
+        }
+
+        /* .fl-referral-get-firefox-page .fl-tabs {
+        } */
+    }
+
+    @media (--viewport-lg-up) {
+        .fl-referral-get-firefox-page .fl-split-page-upper .fl-showcase {
+            max-inline-size: 1106px;
         }
     }
 }
