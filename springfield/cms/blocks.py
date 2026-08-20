@@ -1292,15 +1292,6 @@ class ComparisonTableRowBlock(blocks.StructBlock):
 class ComparisonTableBlock(blocks.StructBlock):
     """Comparison table block, with a highlightable column."""
 
-    variant = blocks.ChoiceBlock(
-        (
-            ("default", "Default"),
-            ("browser-comparison", "Browser comparison"),
-        ),
-        default="default",
-        help_text="Visual variations of the table. Browser comparison uses its own styles.",
-        inline_form=True,
-    )
     highlighted_column = blocks.ChoiceBlock(
         (
             (1, "Column 1"),
@@ -1335,7 +1326,52 @@ class ComparisonTableBlock(blocks.StructBlock):
         label = "Comparison Table"
         form_layout = blocks.BlockGroup(
             children=["header_row", "content_rows", "fine_print"],
-            settings=["variant", "highlighted_column", "mobile_behavior"],
+            settings=["highlighted_column", "mobile_behavior"],
+        )
+
+
+class BrowserComparisonTableBlock(blocks.StructBlock):
+    """Table comparing Firefox against other browsers, with a highlightable column.
+
+    Shares its rows and cells with ComparisonTableBlock but has its own styles:
+    the highlighted column's logo is enlarged and lifted above the table.
+    """
+
+    highlighted_column = blocks.ChoiceBlock(
+        (
+            (1, "Column 1"),
+            (2, "Column 2"),
+            (3, "Column 3"),
+            (4, "Column 4"),
+        ),
+        default=None,
+        required=False,
+        help_text="Column to be visually highlighted. The column may or not exist. Disabled on mobile if the behavior is stacked.",
+        inline_form=True,
+    )
+    mobile_behavior = blocks.ChoiceBlock(
+        (
+            ("scroll", "Horizontal scroll"),
+            ("stacked", "Stacked"),
+        ),
+        default="scroll",
+        inline_form=True,
+    )
+    header_row = blocks.ListBlock(ComparisonTableRowBlock, min_num=1, max_num=1)
+    content_rows = blocks.ListBlock(ComparisonTableRowBlock, min_num=1)
+    fine_print = RichTextBlock(
+        features=HEADING_TEXT_FEATURES,
+        required=False,
+        label="Fine print",
+        help_text="Optional text displayed below the table.",
+    )
+
+    class Meta:
+        template = "cms/blocks/browser-comparison-table.html"
+        label = "Browser Comparison Table"
+        form_layout = blocks.BlockGroup(
+            children=["header_row", "content_rows", "fine_print"],
+            settings=["highlighted_column", "mobile_behavior"],
         )
 
 
@@ -1761,6 +1797,18 @@ class TabMediaBlock(blocks.StreamBlock):
     class Meta:
         label = "Media"
         template = "cms/blocks/media.html"
+class TabBrowserComparisonTableBlock(blocks.StreamBlock):
+    """Wrapper making BrowserComparisonTableBlock a genuinely optional tab field.
+
+    Same reason as TabComparisonTableBlock: a nested StructBlock's StructValue
+    is an always-populated OrderedDict, so it is always truthy and the template
+    could never tell "not added" from "added".
+    """
+
+    browser_comparison_table = BrowserComparisonTableBlock()
+
+    class Meta:
+        label = "Browser comparison table"
 
 
 class TabBlock(blocks.StructBlock):
@@ -1780,6 +1828,7 @@ class TabBlock(blocks.StructBlock):
     referral_controls = TabReferralControlsBlock(max_num=1, min_num=0, required=False)
     impact_dash = TabImpactDashBlock(max_num=1, min_num=0, required=False)
     comparison_table = TabComparisonTableBlock(max_num=1, min_num=0, required=False)
+    browser_comparison_table = TabBrowserComparisonTableBlock(max_num=1, min_num=0, required=False)
     note = RichTextBlock(features=HEADING_TEXT_FEATURES, required=False)
 
     class Meta:
@@ -2951,6 +3000,7 @@ def SectionBlock(allow_uitour=False, require_heading=True, *args, **kwargs):
                 ("two_column_cards", TwoColumnCardsBlock(allow_uitour=allow_uitour)),
                 ("button_row", ButtonRowBlock(allow_uitour=allow_uitour)),
                 ("comparison_table", ComparisonTableBlock()),
+                ("browser_comparison_table", BrowserComparisonTableBlock()),
             ],
             required=False,
         )

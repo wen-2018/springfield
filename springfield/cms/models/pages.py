@@ -49,6 +49,7 @@ from springfield.cms.blocks import (
     BlogArticleBlock,
     BlogCardsListBlock,
     BlogLatestArticlesBlock,
+    BrowserComparisonTableBlock,
     ButtonRowBlock,
     CardGalleryBlock,
     CardsListBlock,
@@ -1066,6 +1067,7 @@ def _get_freeform_page_blocks(allow_uitour=True, allow_kit_intro=False):
         ("line_cards", LineCardsBlock(allow_uitour=allow_uitour, template="cms/blocks/sections/line-cards-section.html", group="Main")),
         ("button_row", ButtonRowBlock(allow_uitour=allow_uitour, group="Main")),
         ("comparison_table", ComparisonTableBlock(group="Main")),
+        ("browser_comparison_table", BrowserComparisonTableBlock(group="Main")),
         ("enterprise_download", EnterpriseDownloadBlock(group="Main")),
         ("kit_banner", KitBannerBlock(allow_uitour=allow_uitour, group="Banners")),
         (

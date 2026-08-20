@@ -4,7 +4,7 @@
  file, You can obtain one at https://mozilla.org/MPL/2.0/.
 #}
 
-<include:comparison-table mobile_behavior="{{ value.mobile_behavior }}">
+<include:browser-comparison-table mobile_behavior="{{ value.mobile_behavior }}">
   <content:header>
     {% for header_row in value.header_row %}
       <tr>
@@ -75,4 +75,4 @@
       {{ value.fine_print|richtext }}
     </content:fine_print>
   {% endif %}
-</include:comparison-table>
+</include:browser-comparison-table>

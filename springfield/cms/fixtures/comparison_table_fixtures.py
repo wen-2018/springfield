@@ -9,7 +9,7 @@ from springfield.cms.models import FreeFormPage2026
 
 SHOW_TO_ALL = {"platforms": [], "firefox": "", "auth_state": "", "default_browser": ""}
 
-# Firefox Enterprise support tier data (used by both variants)
+# Firefox Enterprise support tier data
 HEADER_CELLS = ["", "PREMIUM", "STANDARD"]
 CONTENT_ROWS = [
     ["Best for", "High-assurance operational support", "Direct support for managed Firefox"],
@@ -185,29 +185,17 @@ def get_comparison_table_variants() -> list[dict]:
             },
             "id": "ctbl0003-0000-0000-0000-000000000003",
         },
-        # Browser comparison variant, with its styles
-        {
-            "type": "comparison_table",
-            "value": {
-                "variant": "browser-comparison",
-                "highlighted_column": 2,
-                "mobile_behavior": "stacked",
-                "header_row": [make_optional_content_header_row("ctbl04")],
-                "content_rows": make_optional_content_rows("ctbl04"),
-            },
-            "id": "ctbl0004-0000-0000-0000-000000000004",
-        },
         # With fine print below the table
         {
             "type": "comparison_table",
             "value": {
                 "highlighted_column": 2,
                 "mobile_behavior": "scroll",
-                "header_row": [make_header_row("ctbl05")],
-                "content_rows": make_content_rows("ctbl05"),
-                "fine_print": '<p data-block-key="ctbl05fp">* Response times are estimates and may vary based on issue complexity.</p>',
+                "header_row": [make_header_row("ctbl04")],
+                "content_rows": make_content_rows("ctbl04"),
+                "fine_print": '<p data-block-key="ctbl04fp">* Response times are estimates and may vary based on issue complexity.</p>',
             },
-            "id": "ctbl0005-0000-0000-0000-000000000005",
+            "id": "ctbl0004-0000-0000-0000-000000000004",
         },
     ]
 
@@ -229,8 +217,7 @@ def get_comparison_table_test_page() -> FreeFormPage2026:
         section("Scroll — highlighted column 2", variants[0], "ctblsec01-0000-0000-0000-000000000001"),
         section("Stacked — highlighted column 2 (disabled on mobile)", variants[1], "ctblsec02-0000-0000-0000-000000000002"),
         section("Optional cell content — image headers, Yes/No/Limited results", variants[2], "ctblsec03-0000-0000-0000-000000000003"),
-        section("Browser comparison variant", variants[3], "ctblsec04-0000-0000-0000-000000000004"),
-        section("With fine print", variants[4], "ctblsec05-0000-0000-0000-000000000005"),
+        section("With fine print", variants[3], "ctblsec04-0000-0000-0000-000000000004"),
     ]
     page.upper_content = sections
     page.content = sections
@@ -242,9 +229,6 @@ def get_comparison_table_test_page() -> FreeFormPage2026:
         "<p>Each cell takes plain text, or <b>optional content</b> that replaces it: a <b>comparison result</b> "
         "(Yes, No or Limited, rendered as an icon with its name underneath &mdash; the name can be overridden) "
         "or an <b>image header</b>, which suits column headers.</p>"
-        "<p>Use <b>variant</b> to switch the visual treatment. <b>Browser comparison</b> adds a "
-        "<code>browser-comparison</code> class to the wrapper and draws its highlight and row borders from its own "
-        "theme variables, so it can differ from the default table in both light and dark mode.</p>"
     )
     page.save_revision().publish()
     return page

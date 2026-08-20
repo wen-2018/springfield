@@ -1,0 +1,79 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+from springfield.cms.fixtures.base_fixtures import get_flare_blocks_docs_page, get_or_create_page, get_placeholder_images
+from springfield.cms.fixtures.comparison_table_fixtures import make_optional_content_header_row, make_optional_content_rows, section
+from springfield.cms.models import FreeFormPage2026
+
+
+def get_browser_comparison_table_variants() -> list[dict]:
+    return [
+        # Stacked mobile behavior with highlighted column 2
+        {
+            "type": "browser_comparison_table",
+            "value": {
+                "highlighted_column": 2,
+                "mobile_behavior": "stacked",
+                "header_row": [make_optional_content_header_row("bctbl01")],
+                "content_rows": make_optional_content_rows("bctbl01"),
+            },
+            "id": "bctbl001-0000-0000-0000-000000000001",
+        },
+        # Scroll mobile behavior with highlighted column 3
+        {
+            "type": "browser_comparison_table",
+            "value": {
+                "highlighted_column": 3,
+                "mobile_behavior": "scroll",
+                "header_row": [make_optional_content_header_row("bctbl02")],
+                "content_rows": make_optional_content_rows("bctbl02"),
+            },
+            "id": "bctbl002-0000-0000-0000-000000000002",
+        },
+        # With fine print below the table
+        {
+            "type": "browser_comparison_table",
+            "value": {
+                "highlighted_column": 2,
+                "mobile_behavior": "stacked",
+                "header_row": [make_optional_content_header_row("bctbl03")],
+                "content_rows": make_optional_content_rows("bctbl03"),
+                "fine_print": '<p data-block-key="bctbl03fp">* Comparison reflects default settings at the time of publication.</p>',
+            },
+            "id": "bctbl003-0000-0000-0000-000000000003",
+        },
+    ]
+
+
+def get_browser_comparison_table_test_page() -> FreeFormPage2026:
+    index_page = get_flare_blocks_docs_page()
+    # The image header cells reference the placeholder images by ID.
+    get_placeholder_images()
+
+    page = get_or_create_page(
+        FreeFormPage2026,
+        slug="test-browser-comparison-table",
+        parent=index_page,
+        defaults={"title": "Browser Comparison Table"},
+    )
+
+    variants = get_browser_comparison_table_variants()
+    sections = [
+        section("Stacked — highlighted column 2 (disabled on mobile)", variants[0], "bctblsec1-0000-0000-0000-000000000001"),
+        section("Scroll — highlighted column 3", variants[1], "bctblsec2-0000-0000-0000-000000000002"),
+        section("With fine print", variants[2], "bctblsec3-0000-0000-0000-000000000003"),
+    ]
+    page.upper_content = sections
+    page.content = sections
+    page.docs = (
+        "<p>The Browser Comparison Table block compares Firefox against other browsers. "
+        "Its header row takes an <b>image header</b> per column &mdash; a browser logo above a label &mdash; and its "
+        "body cells take a <b>comparison result</b> (Yes, No or Limited, rendered as an icon with its name underneath).</p>"
+        "<p>Use <b>highlighted_column</b> (1&ndash;4) to emphasize the Firefox column: its logo is enlarged and lifted "
+        "above the table, while its label stays lined up with the other columns' labels. "
+        "Use <b>mobile_behavior</b> to choose between horizontal scroll (default) or stacked columns on small screens. "
+        "The highlight is automatically disabled in stacked mode.</p>"
+    )
+    page.save_revision().publish()
+    return page
