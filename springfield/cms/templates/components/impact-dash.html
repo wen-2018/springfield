@@ -9,15 +9,24 @@
  caller supplies the badge items. Same split as roadmap-list-section/roadmap-item.
 #}
 
-{# props summary="" #}
+{# props summary_heading="", summary_content="" #}
 
 {#
- summary arrives already chosen and already substituted by
- ImpactDashBlock.get_context: which message applies depends on the install count,
- which the component never sees. Nothing to resolve here.
+ The pair arrives already chosen and already substituted by
+ ImpactDashBlock.get_context: which milestone's copy applies depends on the
+ install count, which the component never sees. Nothing to resolve here.
+
+ Both halves are required of the editor, so the guards only catch legacy or
+ imported JSON -- same as badge_name in badge.html. Each stands alone, as one
+ half being blank is no reason to drop the other.
+
+ h3 because the tab this sits in opens with an h2 (cms/blocks/tab.html).
 #}
-{% if summary %}
-  <p class="fl-impact-dash-summary">{{ summary }}</p>
+{% if summary_heading %}
+  <h3 class="fl-impact-dash-summary-heading">{{ summary_heading }}</h3>
+{% endif %}
+{% if summary_content %}
+  <p class="fl-impact-dash-summary-content">{{ summary_content }}</p>
 {% endif %}
 
 {% if contents.badges %}

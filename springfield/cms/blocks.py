@@ -1564,9 +1564,11 @@ class BadgeBlock(blocks.StructBlock):
     that is a repo-wide constraint, as there is no ngettext usage and no Fluent
     plural selector anywhere in the codebase.
 
-    ``message`` is the dashboard's summary line for the stretch of the journey
-    where this badge is the last one earned, so it belongs to the badge rather
-    than to the dashboard: the copy that suits 1 install does not suit 100.
+    ``heading`` and ``message`` are the dashboard's summary for the stretch of
+    the journey where this badge is the last one earned, so they belong to the
+    badge rather than to the dashboard: the copy that suits 1 install does not
+    suit 100. Neither is rendered on the badge itself -- only the pair belonging
+    to the furthest badge unlocked is, above the badge array.
     """
 
     image = ImageChooserBlock(required=False, help_text="Badge artwork. Optional.")
@@ -1589,14 +1591,22 @@ class BadgeBlock(blocks.StructBlock):
         required=True,
         help_text='Badge name, like "Connector", "Supporter", etc.',
     )
+    heading = blocks.CharBlock(
+        required=True,
+        label="Summary heading",
+        help_text=(
+            "Heading shown above the badges while this is the highest badge unlocked, e.g. "
+            '"You are a Supporter!" Use {install count} where the number of successful '
+            "installs should go."
+        ),
+    )
     message = blocks.CharBlock(
-        required=False,
+        required=True,
         label="Message",
         help_text=(
-            "Optional line shown above the badges while this is the highest badge unlocked. "
+            "Line shown under the summary heading while this is the highest badge unlocked. "
             "Use {install count} where the number of successful installs should go, e.g. "
-            '"You have helped {install count} people switch to Firefox." Leave blank to show '
-            "no message at this milestone."
+            '"You have helped {install count} people switch to Firefox."'
         ),
     )
 
@@ -1614,22 +1624,33 @@ class ImpactDashBlock(blocks.StructBlock):
     ``install_count`` on the template context. TabBlock is reachable from
     MediaBlock on many other page models, where every badge stays locked.
 
-    Above the badges sits one optional message, chosen by progress: the message
-    of the furthest badge unlocked, or ``locked_summary`` while none is. Exactly
-    one is rendered, so the two never compete for the same line.
+    Above the badges sits one summary -- a heading and a message -- chosen by
+    progress: the pair belonging to the furthest badge unlocked, or
+    ``locked_heading``/``locked_content`` while none is. Exactly one pair is
+    rendered, and both halves always come from the same source, so a badge's
+    heading can never end up over the locked message.
     """
 
-    #: Placeholder an editor writes in a message to mark where the install count
-    #: goes. Same convention as {invite link} in ReferralControlsBlock.email_body.
+    #: Placeholder an editor writes in a heading or message to mark where the install
+    #: count goes. Same convention as {invite link} in ReferralControlsBlock.email_body.
     INSTALL_COUNT_TOKEN = "{install count}"
 
-    locked_summary = blocks.CharBlock(
-        required=False,
+    locked_heading = blocks.CharBlock(
+        required=True,
+        label="Heading if no badge is unlocked",
+        help_text=(
+            "Heading shown above the badges while no badge has been unlocked yet. Once a badge "
+            "is unlocked, that badge's own heading replaces it. Use {install count} where the "
+            "number of successful installs should go."
+        ),
+    )
+    locked_content = blocks.CharBlock(
+        required=True,
         label="Message if no badge is unlocked",
         help_text=(
-            "Optional line shown above the badges while no badge has been unlocked yet. Once a "
-            "badge is unlocked, that badge's own message replaces it. Use {install count} where "
-            "the number of successful installs should go. Leave blank to show no message."
+            "Line shown under the heading while no badge has been unlocked yet. Once a badge is "
+            "unlocked, that badge's own message replaces it. Use {install count} where the "
+            "number of successful installs should go."
         ),
     )
     badges = blocks.ListBlock(BadgeBlock(), min_num=1, label="Badges")
@@ -1652,14 +1673,18 @@ class ImpactDashBlock(blocks.StructBlock):
         context = super().get_context(value, parent_context=parent_context)
         install_count = self._coerce_count((parent_context or {}).get("install_count"))
         badges = [self._badge_context(badge, install_count) for badge in value.get("badges") or []]
+        heading, content = self._summary_source(value, badges)
         context["install_count"] = install_count
         context["badges"] = badges
-        context["summary"] = self._resolve_summary(self._summary_source(value, badges), install_count)
+        context["summary_heading"] = self._resolve_summary(heading, install_count)
+        context["summary_content"] = self._resolve_summary(content, install_count)
         return context
 
     @staticmethod
-    def _summary_source(value, badges) -> str:
-        """The message to show above the badges, before token substitution.
+    def _summary_source(value, badges) -> tuple[str, str]:
+        """The heading and message to show above the badges, before token substitution.
+
+        Both halves come from one source, never mixed across milestones.
 
         The furthest milestone reached is the interesting one, so the achieved
         badge with the largest number wins -- picked by number rather than by
@@ -1667,16 +1692,18 @@ class ImpactDashBlock(blocks.StructBlock):
         keeps the first of equal numbers, so duplicate thresholds resolve to the
         one the editor listed first.
 
-        With nothing unlocked there is no badge message to show, so the
-        dashboard's own locked_summary stands in. A badge whose message is blank
-        shows nothing rather than falling back to locked_summary, which would
-        claim no badge had been earned.
+        With nothing unlocked there is no badge summary to show, so the
+        dashboard's own locked pair stands in. Both halves are required of the
+        editor, but a half left blank in legacy or imported JSON renders as
+        nothing rather than falling back to the locked copy, which would claim no
+        badge had been earned.
         """
         achieved = [badge for badge in badges if badge["is_achieved"]]
         if not achieved:
-            return value.get("locked_summary") or ""
+            return value.get("locked_heading") or "", value.get("locked_content") or ""
 
-        return max(achieved, key=lambda badge: badge["number"])["message"]
+        furthest = max(achieved, key=lambda badge: badge["number"])
+        return furthest["heading"], furthest["message"]
 
     @classmethod
     def _resolve_summary(cls, raw, install_count: int) -> str:
@@ -1684,7 +1711,7 @@ class ImpactDashBlock(blocks.StructBlock):
 
         A literal replace rather than str.format, so any other braces the editor
         typed pass through untouched instead of raising KeyError or ValueError and
-        taking down the render. A message that never mentions the count is a legitimate thing to write.
+        taking down the render. Copy that never mentions the count is a legitimate thing to write.
         """
         summary = (raw or "").strip()
         if not summary:
@@ -1721,7 +1748,8 @@ class ImpactDashBlock(blocks.StructBlock):
             "badge_name": (badge.get("badge_name") or "").strip(),
             "is_achieved": install_count >= number,
             # Read by _summary_source, not by the badge itself: only the highest
-            # achieved badge's message is rendered, above the badge array.
+            # achieved badge's pair is rendered, above the badge array.
+            "heading": (badge.get("heading") or "").strip(),
             "message": (badge.get("message") or "").strip(),
         }
 
